@@ -1,19 +1,43 @@
 # UCAS_DM_GTL_Tianchi
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
 
+## Environment
+```bash
+torch == 1.6.0
+pickle == 0.7.5
+```
+
+## Directory Structure
+
 ```bash
 .
 ├── LICENSE
 ├── README.md
-├── TrainingAnnotation.csv
-├── data_train.ipynb
-├── src
-└── tree.txt
+├── data
+│   ├── APTOS\ Big\ Data\ Competition\ Preliminary\ Dataset.rtf
+│   ├── PreliminaryValidationSet_Info.csv
+│   ├── TrainingAnnotation.csv
+│   ├── data_train.ipynb
+│   ├── submit.csv
+│   ├── test_data.pk
+│   ├── train_data.pk
+│   └── tree.txt
+└── src
+    ├── main.py
+    └── preproces_csv.py
+
 ```
 
----
+## Experiment Setup
+```bash
+cd src/
+# processing .csv
+python preproces_csv.py
+# load data
+python main.py
+```
 
-First communication：
+## First communication：
 
 图片处理：（huanglinyan）
 
