@@ -37,6 +37,10 @@ python preproces_csv.py
 python main.py
 ```
 
+## 一个简单的想法（不一定对）——chx
+
+![idea](./data/Flowchart.png)
+
 ## First communication：
 
 图片处理：（huanglinyan）
