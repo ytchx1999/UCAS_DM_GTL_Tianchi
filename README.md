@@ -11,10 +11,11 @@ pickle == 0.7.5
 
 ## Experiment Setup
 ```bash
-cd src/
+cd src/utils
 # processing .csv
 python preproces_csv.py
 # load data
+cd ..
 python main.py
 ```
 
