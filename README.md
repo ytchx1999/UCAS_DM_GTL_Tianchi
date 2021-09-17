@@ -7,26 +7,7 @@ torch == 1.6.0
 pickle == 0.7.5
 ```
 
-## Directory Structure
 
-```bash
-.
-├── LICENSE
-├── README.md
-├── data
-│   ├── APTOS\ Big\ Data\ Competition\ Preliminary\ Dataset.rtf
-│   ├── PreliminaryValidationSet_Info.csv
-│   ├── TrainingAnnotation.csv
-│   ├── data_train.ipynb
-│   ├── submit.csv
-│   ├── test_data.pk
-│   ├── train_data.pk
-│   └── tree.txt
-└── src
-    ├── main.py
-    └── preproces_csv.py
-
-```
 
 ## Experiment Setup
 ```bash
@@ -63,3 +44,34 @@ csv文件处理：（chihuixuan）
 目前有两个想法：
 1. 需要先了解清楚CST，IRF这些属性在患者图像中是怎么体现的，大概在图像的哪些部分可以帮助进行判别，这样方便下一步设计图像算法，进行二分类；
 2. 另一方面可以做一些相关性分析的算法，判断各个属性对VA的值的影响，单独设计一个模型预测VA的变化。
+
+## Directory Structure
+
+```bash
+.
+├── LICENSE
+├── README.md
+├── data
+│   ├── APTOS\ Big\ Data\ Competition\ Preliminary\ Dataset.rtf
+│   ├── Flowchart.png
+│   ├── PreliminaryValidationSet_Info.csv
+│   ├── TrainingAnnotation.csv
+│   ├── data_train.ipynb
+│   ├── resnet18-5c106cde.pth
+│   ├── submit.csv
+│   ├── test_data.pk
+│   ├── train_data.pk
+│   └── tree.txt
+└── src
+    ├── __init__.py
+    ├── main.py
+    ├── models
+    │   ├── __init__.py
+    │   └── model.py
+    └── utils
+        ├── __init__.py
+        ├── dataset.py
+        └── preproces_csv.py
+
+
+```
