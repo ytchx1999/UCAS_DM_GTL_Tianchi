@@ -52,7 +52,7 @@ def preprocess_csv():
         'prePED': torch.from_numpy(train_data[['prePED']].values).long(),
         'preHRF': torch.from_numpy(train_data[['preHRF']].values).long(),
         'VA': torch.from_numpy(train_data[['VA']].values),
-        'continue injection': torch.from_numpy(train_data['continue injection'].values).long(),
+        'continue injection': torch.from_numpy(train_data[['continue injection']].values).long(),
         'CST': torch.from_numpy(train_data[['CST']].values),
         'IRF': torch.from_numpy(train_data[['IRF']].values).long(),
         'SRF': torch.from_numpy(train_data[['SRF']].values).long(),

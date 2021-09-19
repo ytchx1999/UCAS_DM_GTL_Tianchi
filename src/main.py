@@ -22,6 +22,8 @@ def main():
         'test_feats.shape=', test_feats.shape
     )
 
+    # print(torch.cat([train_labels_dict['preIRF'], train_labels_dict['preSRF']], dim=1))
+
 
 # main
 if __name__ == '__main__':
