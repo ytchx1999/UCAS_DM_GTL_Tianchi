@@ -6,6 +6,16 @@ import torch.nn.functional as F
 
 
 def preprocess_csv():
+    '''
+    train_id_index: dict, {'patient ID': 0, ...}
+    train_feats: torch_tensor, L2 normalization
+    train_labels_dict: dict, {'preCST': torch.tensor(...), ...}
+
+    test_id_index: dict, {'patient ID': 0, ...}
+    test_feats: torch_tensor, L2 normalization
+
+    :return: None, saved in ../../data/train_data.pk, ../../data/test_data.pk
+    '''
     ########################
     # train
     ########################
