@@ -46,18 +46,18 @@ def preprocess_csv():
 
     # train labels (dict_torch)
     train_labels_dict = {
-        'preCST': torch.from_numpy(train_data['preCST'].values),
-        'preIRF': torch.from_numpy(train_data['preIRF'].values).long(),
-        'preSRF': torch.from_numpy(train_data['preSRF'].values).long(),
-        'prePED': torch.from_numpy(train_data['prePED'].values).long(),
-        'preHRF': torch.from_numpy(train_data['preHRF'].values).long(),
-        'VA': torch.from_numpy(train_data['VA'].values),
+        'preCST': torch.from_numpy(train_data[['preCST']].values),
+        'preIRF': torch.from_numpy(train_data[['preIRF']].values).long(),
+        'preSRF': torch.from_numpy(train_data[['preSRF']].values).long(),
+        'prePED': torch.from_numpy(train_data[['prePED']].values).long(),
+        'preHRF': torch.from_numpy(train_data[['preHRF']].values).long(),
+        'VA': torch.from_numpy(train_data[['VA']].values),
         'continue injection': torch.from_numpy(train_data['continue injection'].values).long(),
-        'CST': torch.from_numpy(train_data['CST'].values),
-        'IRF': torch.from_numpy(train_data['IRF'].values).long(),
-        'SRF': torch.from_numpy(train_data['SRF'].values).long(),
-        'PED': torch.from_numpy(train_data['PED'].values).long(),
-        'HRF': torch.from_numpy(train_data['HRF'].values).long()
+        'CST': torch.from_numpy(train_data[['CST']].values),
+        'IRF': torch.from_numpy(train_data[['IRF']].values).long(),
+        'SRF': torch.from_numpy(train_data[['SRF']].values).long(),
+        'PED': torch.from_numpy(train_data[['PED']].values).long(),
+        'HRF': torch.from_numpy(train_data[['HRF']].values).long()
     }
     # train_labels = torch.from_numpy(train_labels)
     print('train labels dict:', train_labels_dict)
