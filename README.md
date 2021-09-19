@@ -5,6 +5,8 @@
 ```bash
 torch == 1.6.0
 pickle == 0.7.5
+wget == 3.2
+torchsummary == 1.5.1
 ```
 
 
