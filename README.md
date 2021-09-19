@@ -13,13 +13,43 @@ torchsummary == 1.5.1
 
 
 ## Experiment Setup
+Run corr analysis.
+```bash
+cd src/utils
+python corr_csv.py
+```
+
+Run model.
 ```bash
 cd src/utils
 # processing .csv
-python preproces_csv.py
+python preprocess_csv.py
 # load data
 cd ..
 python main.py
+```
+
+## Corr Analysis
+```bash
+Pos_Corr (r>0.6)                      
+ [('preVA', 'VA'),                     
+  ('preIRF', 'IRF'),                   
+  ('prePED', 'PED'),                   
+  ('preHRF', 'HRF'),                   
+  ('VA', 'preVA'),                     
+  ('IRF', 'preIRF'),                   
+  ('PED', 'prePED'),                   
+  ('HRF', 'preHRF')]                   
+                                        
+Pos_Corr (r<-0.4)                     
+ [('diagnosis', 'preSRF'),             
+  ('diagnosis', 'prePED'),             
+  ('diagnosis', 'continue injection'), 
+  ('diagnosis', 'PED'),                
+  ('preSRF', 'diagnosis'),             
+  ('prePED', 'diagnosis'),             
+  ('continue injection', 'diagnosis'), 
+  ('PED', 'diagnosis')]                
 ```
 
 ## 一个简单的想法（不一定对）——chx
