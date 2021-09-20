@@ -15,8 +15,6 @@ if __name__ == "__main__":
                 for pic in os.listdir(path):
                     currpath = os.path.join(path, pic)
                     dispath = 'pro_train/' + currpath[6:]
-                    print(os.path.abspath(dispath)[:-20])
-                    print(dispath)
                     if not os.path.exists(os.path.abspath(dispath)[:-20]):
                         os.makedirs(os.path.abspath(dispath)[:-20])
                     img = cv2.imread(currpath)
