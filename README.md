@@ -8,6 +8,7 @@ pandas == 1.2.0
 pickle == 0.7.5
 wget == 3.2
 torchsummary == 1.5.1
+seaborn == 0.11.2
 ```
 
 
@@ -30,6 +31,8 @@ python main.py
 ```
 
 ## Corr Analysis
+![heatmap by zhuhe](./data/heatmap.png)
+
 ```bash
 Pos_Corr (r>0.6)                      
  [('preVA', 'VA'),                     
