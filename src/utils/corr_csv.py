@@ -1,5 +1,6 @@
 import pandas as pd
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 def check_corr(mask, head_names):
     '''
@@ -26,11 +27,14 @@ def corr_csv():
 
     head_names = train_data.columns[1:]
 
-    # compute corr
-    corr = train_data.corr().values
+    # draw corr
+    corr = train_data.corr()
+    sns.heatmap(corr, cmap='Blues', annot=True)
+    plt.show()
+
     # generate mask
-    pos_mask = (corr > 0.6)
-    neg_mask = (corr < -0.4)
+    pos_mask = (corr.values > 0.6)
+    neg_mask = (corr.values < -0.4)
 
     pos_list = check_corr(pos_mask, head_names)
     neg_list = check_corr(neg_mask, head_names)
