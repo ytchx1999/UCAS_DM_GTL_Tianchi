@@ -1,6 +1,9 @@
 # UCAS_DM_GTL_Tianchi
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
 
+## Branch
+baseline: `tianchi_v1`
+
 ## Environment
 ```bash
 torch == 1.6.0
