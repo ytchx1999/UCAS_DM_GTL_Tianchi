@@ -4,6 +4,17 @@
 ## Branch
 baseline: `tianchi_v1`
 
+### Usage
+```bash
+# create and checkout the branch
+git checkout -b tianchi_v1
+# or only checkout the branch
+git checkout tianchi_v1
+
+git add ...
+git commit ...
+git push -u origin tianchi_v1:tianchi_v1
+```
 
 ## Environment
 ```bash
