@@ -50,19 +50,18 @@ if __name__ == "__main__":
                     dispath = f'mix_{trainval}/' + currpath[6:]
                     print(os.path.abspath(dispath)[:-20])
                     print(dispath)
-                    if not os.path.exists(os.path.abspath(dispath)[:-20]):
-                        os.makedirs(os.path.abspath(dispath)[:-20])
-                    if n1 > 0:
-                        img = (lb / n1).astype(np.int8)
-                        print(os.path.join(dispath, user+'L_1.jpg'))
-                        cv2.imwrite(os.path.join(dispath[:-20], user+'L_1.jpg'), img)
-                    if n2 > 0:
-                        img = (la / n2).astype(np.int8)
-                        cv2.imwrite(os.path.join(dispath[:-20], user+'L_2.jpg'), img)
-                    if n3 > 0:
-                        img = (rb / n3).astype(np.int8)
-                        cv2.imwrite(os.path.join(dispath[:-20], user+'R_1.jpg'), img)
-                    if n4 > 0:
-                        img = (ra / n4).astype(np.int8)
-                        cv2.imwrite(os.path.join(dispath[:-20], user+'R_2.jpg'), img)
+                if not os.path.exists(os.path.abspath(dispath)[:-20]):
+                    os.makedirs(os.path.abspath(dispath)[:-20])
+                if n1 > 0:
+                    img = (lb / n1).astype(np.int8)
+                    cv2.imwrite(os.path.join(dispath[:-20], user+'L_1.jpg'), img)
+                if n2 > 0:
+                    img = (la / n2).astype(np.int8)
+                    cv2.imwrite(os.path.join(dispath[:-20], user+'L_2.jpg'), img)
+                if n3 > 0:
+                    img = (rb / n3).astype(np.int8)
+                    cv2.imwrite(os.path.join(dispath[:-20], user+'R_1.jpg'), img)
+                if n4 > 0:
+                    img = (ra / n4).astype(np.int8)
+                    cv2.imwrite(os.path.join(dispath[:-20], user+'R_2.jpg'), img)
 
