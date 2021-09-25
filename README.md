@@ -5,6 +5,7 @@
 baseline: `tianchi_v1`
 
 ### Usage
+[《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
 ```bash
 # create and checkout the branch
 git checkout -b tianchi_v1
