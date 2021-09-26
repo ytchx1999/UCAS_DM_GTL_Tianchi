@@ -1,6 +1,10 @@
 # UCAS_DM_GTL_Tianchi
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
 
+## Download dataset
+
+[https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
+
 ## Branch
 baseline: `tianchi_v1`
 
