@@ -4,13 +4,19 @@
 修改代码中的root为train以及test存放的父目录，层级结构如下：
 root
 > train
+
 >> trainset1
+
 >> trainset2
+
 >> trainset3
+
 >> ……
 
 > test
+
 >> testset1
+
 >> testset2
     
  运行代码 python preprocess_img.py 
