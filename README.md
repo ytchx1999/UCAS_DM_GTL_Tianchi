@@ -5,6 +5,8 @@
 
 [https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
+使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
+
 ## Branch
 baseline: `tianchi_v1`
 
@@ -108,6 +110,14 @@ csv文件处理：（chihuixuan）
 │   ├── test_data.pk
 │   ├── train_data.pk
 │   └── tree.txt
+├── dataset
+│   ├── mix_train
+│   │   ├── 0000-0000
+│   │   │   ├── 0000-0000L_1.jpg
+│   │   │   ├── 0000-0000L_2.jpg
+│   │   │   ├── ...
+│   │   └── ...
+│   └── mix_test
 └── src
     ├── __init__.py
     ├── main.py
