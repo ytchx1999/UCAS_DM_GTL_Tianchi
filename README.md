@@ -1,6 +1,12 @@
 # UCAS_DM_GTL_Tianchi
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
 
+## Download dataset
+
+[https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
+
+使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
+
 ## Branch
 baseline: `tianchi_v1`
 
@@ -24,6 +30,8 @@ pandas == 1.2.0
 pickle == 0.7.5
 wget == 3.2
 torchsummary == 1.5.1
+opencv == 4.5.3
+PIL == 8.1.0
 seaborn == 0.11.2
 ```
 
@@ -115,6 +123,14 @@ csv文件处理：（chihuixuan）
 │   ├── test_data.pk
 │   ├── train_data.pk
 │   └── tree.txt
+├── dataset
+│   ├── mix_train
+│   │   ├── 0000-0000
+│   │   │   ├── 0000-0000L_1.jpg
+│   │   │   ├── 0000-0000L_2.jpg
+│   │   │   ├── ...
+│   │   └── ...
+│   └── mix_test
 └── src
     ├── __init__.py
     ├── main.py
@@ -123,8 +139,9 @@ csv文件处理：（chihuixuan）
     │   └── model.py
     └── utils
         ├── __init__.py
+        ├── corr_csv.py
         ├── dataset.py
-        └── preproces_csv.py
-
-
+        ├── mix_images.py
+        ├── preprocess_csv.py
+        └── preprocess_img.py
 ```
