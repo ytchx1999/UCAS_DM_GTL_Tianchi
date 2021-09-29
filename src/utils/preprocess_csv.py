@@ -61,7 +61,7 @@ def preprocess_csv():
     #     'HRF': torch.from_numpy(train_data[['HRF']].values).long()
     # }
     # train_labels = torch.from_numpy(train_labels)
-    print('train labels dict:', train_labels)
+    print('train labels:', train_labels)
 
     # save variables in '../data/train_data.pk'
     with open('../../data/train_data.pk', 'wb') as f:

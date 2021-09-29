@@ -16,6 +16,7 @@ pickle == 0.7.5
 wget == 3.2
 torchsummary == 1.5.1
 opencv == 4.5.3
+PIL == 8.1.0
 seaborn == 0.11.2
 ```
 
