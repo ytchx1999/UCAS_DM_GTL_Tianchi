@@ -35,8 +35,6 @@ PIL == 8.1.0
 seaborn == 0.11.2
 ```
 
-
-
 ## Experiment Setup
 Run corr analysis.
 ```bash
@@ -54,7 +52,12 @@ cd ..
 python main.py
 ```
 
+## Baseline模型结构
+
+![model](./data/model.drawio.pdf)
+
 ## Corr Analysis
+
 ![heatmap by zhuhe](./data/heatmap.png)
 
 ```bash
@@ -82,8 +85,6 @@ Pos_Corr (r<-0.4)
 ## 一个简单的想法（不一定对）——chx
 [Process-on Flowchart](https://www.processon.com/view/link/613c1907e0b34d41bb4754f5)
 
-![idea](./data/Flowchart.png)
-
 ## First communication：
 
 图片处理：（huanglinyan）
@@ -91,7 +92,7 @@ Pos_Corr (r<-0.4)
 [网上一个人写的思路，仅供参考。](https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/16312381041561645%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF.pdf)
 
 1. 将所需图片进行裁剪，获取有用的特征（同一个病例左右眼分开，治疗前后分开，命名样例：0000-0000L_1000_cut_1.jpg、0000-0000L_1000_cut_2.jpg，注意一下在遍历文件夹时，需要注意匹配前面的字段，后面的lr可能匹配不上)
-2. 将裁剪下来的图片合并为一张图片（同一个病例左右眼分开，治疗前后分开，分别相加），图片保存到当前目录下，命名样例：0000-0000L_1.jpg 或 0000-0000L_2.jpg（1代表治疗前，2代表治疗后）
+2. 将裁剪下来的图片合并为一张图片（同一个病例左右眼分开，治疗前后分开，分别相加），图片保存到当前目录下，命名样例0000-0000L_1.jpg 或 0000-0000L_2.jpg（1代表治疗前，2代表治疗后）
 
 csv文件处理：（chihuixuan）
 
