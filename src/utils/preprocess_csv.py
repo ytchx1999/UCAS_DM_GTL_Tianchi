@@ -44,6 +44,16 @@ def preprocess_csv():
                                'prePED', 'preHRF', 'VA',
                                'continue injection', 'CST', 'IRF',
                                'SRF', 'PED', 'HRF']].values
+    # norm preCST, VA, CST
+    # (x - mean) / std
+    norm_info = {
+        'preCST': [train_labels[:, 0].mean(), train_labels[:, 0].std()],
+        'VA': [train_labels[:, 5].mean(), train_labels[:, 5].std()],
+        'CST': [train_labels[:, 7].mean(), train_labels[:, 7].std()]
+    }
+    train_labels[:, 0] = (train_labels[:, 0] - norm_info['preCST'][0]) / norm_info['preCST'][1]
+    train_labels[:, 5] = (train_labels[:, 5] - norm_info['VA'][0]) / norm_info['VA'][1]
+    train_labels[:, 7] = (train_labels[:, 7] - norm_info['CST'][0]) / norm_info['CST'][1]
 
     # train labels (dict_torch)
     # train_labels_dict = {
@@ -66,6 +76,9 @@ def preprocess_csv():
     # save variables in '../data/train_data.pk'
     with open('../../data/train_data.pk', 'wb') as f:
         pickle.dump((train_id_index, train_feats, train_labels), f)
+
+    with open('../../data/norm_info.pk', 'wb') as f:
+        pickle.dump(norm_info, f)
 
     ########################
     # test
