@@ -103,12 +103,12 @@ class EyeDataset(Dataset):
                 # l_after_img_path (str)
                 # l_img_feats (torch)
                 # l_img_labels (torch)
-                if l_img_index.shape[0] != 0 and not (l_pre_img_path == '' and l_after_img_path == ''):
+                if l_img_index.shape[0] != 0 and l_pre_img_path != '' and l_after_img_path != '':
                     if mode == 'train':
                         data_info.append((l_pre_img_path, l_after_img_path, l_img_feats, l_img_labels))
                     else:
                         data_info.append((l_pre_img_path, l_after_img_path, l_img_feats))
-                if r_img_index.shape[0] != 0 and not (r_pre_img_path == '' and r_after_img_path == ''):
+                if r_img_index.shape[0] != 0 and r_pre_img_path != '' and r_after_img_path != '':
                     if mode == 'train':
                         data_info.append((r_pre_img_path, r_after_img_path, r_img_feats, r_img_labels))
                     else:
@@ -133,15 +133,22 @@ if __name__ == '__main__':
     print(test_dataset.data_info[0])
     print(len(test_dataset.data_info))
 
+    cnt = 0
+    for i in range(len(test_dataset.data_info)):
+        pre_img_path, after_img_path, img_feats = test_dataset.data_info[i]
+        if pre_img_path == '' or after_img_path == '':
+            cnt += 1
+    print(cnt)
+
     # train dataset
 
     # ('../../dataset/mix_train/0000-1726/0000-1726L_1.jpg',
     #  '../../dataset/mix_train/0000-1726/0000-1726L_2.jpg',
     #  tensor([0.0136, 0.0244, 0.0288, 0.0075, 0.0000], dtype=torch.float64),
-    #  tensor([198.0000,   0.0000,   0.0000,   0.0000,   0.0000,   0.6000,   0.0000,
-    #         216.0000,   0.0000,   0.0000,   0.0000,   0.0000], dtype=torch.float64))
-    # 2151
-    # 20
+    #  tensor([-0.7330,  0.0000,  0.0000,  0.0000,  0.0000, -0.1084,  0.0000, -0.6558,
+    #          0.0000,  0.0000,  0.0000,  0.0000], dtype=torch.float64))
+    # 2131
+    # 0
 
     #######################################
 
@@ -151,3 +158,4 @@ if __name__ == '__main__':
     #  '../../dataset/mix_test/0000-0069/0000-0069R_2.jpg',
     #  tensor([0.0330, 0.0440, 0.0651, 0.0461, 0.1625], dtype=torch.float64))
     # 361
+    # 0

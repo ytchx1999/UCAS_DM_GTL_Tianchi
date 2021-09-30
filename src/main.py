@@ -16,7 +16,7 @@ def main():
     # args
     parser = argparse.ArgumentParser(description='Tianchi')
     parser.add_argument('--device', type=int, default=0)
-    parser.add_argument('--num_classes', type=int, default=2)
+    parser.add_argument('--num_classes', type=int, default=12)
     parser.add_argument('--img_size', type=int, default=224)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--norm_mean', type=float, default=0.5)
@@ -51,6 +51,13 @@ def main():
     train_loader = DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(dataset=test_dataset, batch_size=args.batch_size)
 
+    with open('../data/norm_info.pk', 'rb') as f:
+        norm_info = pickle.load(f)
+    # {'preCST': [371.39229340761375, 236.55687441676756],
+    #  'VA': [0.6693871866295265, 0.6399039473121558],
+    #  'CST': [321.81104921077065, 161.35073145439281]}
+    print(norm_info)
+
     # load train data
     # with open('../data/train_data.pk', 'rb') as f:
     #     train_id_index, train_feats, train_labels_dict = pickle.load(f)
@@ -81,10 +88,10 @@ def main():
         pre_img, after_img, img_feats, img_labels = pre_img.to(device), after_img.to(device), img_feats.to(
             device), img_labels.to(device)
 
-        if pre_img != None:
-            print(pre_img.shape)
-        if after_img != None:
-            print(after_img.shape)
+        # if pre_img != None:
+        print(pre_img.shape)
+        # if after_img != None:
+        print(after_img.shape)
         print(img_feats.shape)
         print(img_labels.shape)
 
