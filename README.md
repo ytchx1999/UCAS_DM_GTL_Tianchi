@@ -7,16 +7,20 @@
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
-## Branch
+## Branch Usage
 baseline: `tianchi_v1`
 
-### Usage
 [《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
+
 ```bash
+git clone git@github.com:ytchx1999/UCAS_DM_GTL_Tianchi.git
 # create and checkout the branch
 git checkout -b tianchi_v1
 # or only checkout the branch
 git checkout tianchi_v1
+git checkout main
+# pull from tianchi_v1 branch
+git pull origin tianchi_v1:tianchi_v1
 
 git add ...
 git commit ...
