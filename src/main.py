@@ -139,9 +139,9 @@ def main():
     for epoch in range(args.epochs):
         train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch)
         print(
-            f'epoch: {epoch:02d}, '
+            f'epoch: {int(epoch):02d}, '
             f'train_loss: {train_loss:.4f}, '
-            f'train_score: {train_score:4d}, '
+            f'train_score: {int(train_score):4d}, '
             # f'val_loss, {val_loss:.4f}, '
             # f'val_acc, {val_acc:.4f} '
         )
@@ -224,11 +224,11 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
         tot_train += img_labels.size(0)
 
         print(
-            f'epoch: {epoch:02d}, '
+            f'epoch: {int(epoch):02d}, '
             f'iter: {i:02d}, '
             f'batch_loss: {loss:.4f}, '
-            f'batch_score: {correct_num:4d}, '
-            f'tot_score: {score:4d}, '
+            f'batch_score: {int(correct_num):4d}, '
+            f'tot_score: {int(score):4d}, '
         )
 
     return tot_loss / tot_train, score
