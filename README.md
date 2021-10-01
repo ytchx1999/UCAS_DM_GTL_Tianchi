@@ -8,6 +8,9 @@ v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dcht
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
+## Result
+![res](./data/2021-10-01.png)
+
 ## Branch Usage
 baseline: `tianchi_v2`
 
@@ -48,7 +51,6 @@ python corr_csv.py
 ```
 
 Run model.
-+ Hardware: Tesla V100 (32GB) * 1
 ```bash
 cd src/utils
 # processing .csv

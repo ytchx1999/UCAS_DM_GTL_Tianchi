@@ -137,7 +137,8 @@ def main():
 
     # train
     for epoch in range(args.epochs):
-        train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch)
+        train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info,
+                                        epoch)
         print(
             f'epoch: {int(epoch):02d}, '
             f'train_loss: {train_loss:.4f}, '
