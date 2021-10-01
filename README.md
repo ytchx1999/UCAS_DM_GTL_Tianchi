@@ -2,8 +2,9 @@
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
 
 ## Download dataset
+v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing](https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing)
 
-[https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
+v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 

@@ -89,6 +89,7 @@ class EyeDataset(Dataset):
 
                 for _, _, files in os.walk(os.path.join(data_dir, sub_dir)):
                     for file in files:
+                        # print(file)
                         if file[9] == 'L' and file[-5] == '1':
                             l_pre_img_path = os.path.join(data_dir, sub_dir, file)
                         elif file[9] == 'L' and file[-5] == '2':
