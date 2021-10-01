@@ -165,13 +165,19 @@ def score_reg(out, label, norm_info):
 
 
 def score_cls(out, label):
-    cnt = 0
-    cnt = torch.eq(out, label)
-    # for i in range(out.shape[0]):
-    #     for j in range(out.shape[1]):
-    #         if out[i][j] == label[i][j]:
-    #             cnt += 1
-    return cnt
+    new_out = out.clone()
+    new_out = torch.sigmoid(new_out)
+
+    zero = torch.zeros_like(new_out)
+    one = torch.ones_like(new_out)
+    new_out = torch.where(new_out >= 0.5, one, new_out)
+    new_out = torch.where(new_out < 0.5, zero, new_out)
+    new_out = new_out.long()
+
+    new_label = label.clone().long()
+
+    cnt = torch.eq(new_out, new_label).sum().item()
+    return float(cnt)
 
 
 def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info):
