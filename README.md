@@ -59,8 +59,6 @@ python main.py
 
 ## Baseline模型结构
 
-[https://drive.google.com/file/d/1peHPT9rheF3DHa_UwrWkO9GvEikd5RB4/view?usp=sharing](https://drive.google.com/file/d/1peHPT9rheF3DHa_UwrWkO9GvEikd5RB4/view?usp=sharing)
-
 ![model](./data/baseline.png)
 
 ## Corr Analysis
