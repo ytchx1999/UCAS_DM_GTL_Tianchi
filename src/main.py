@@ -31,7 +31,7 @@ def main():
     args = parser.parse_args()
     print(args)
 
-    pd.set_option('mode.chained_assignment', None)
+    pd.set_option('mode.chained_assignment', None)  # pandas no warning
 
     # transform
     transform = transforms.Compose([
@@ -55,6 +55,7 @@ def main():
     train_loader = DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True)
     test_loader = DataLoader(dataset=test_dataset, batch_size=args.batch_size)
 
+    # load norm info
     with open('../data/norm_info.pk', 'rb') as f:
         norm_info = pickle.load(f)
     # {'preCST': [371.39229340761375, 236.55687441676756],
@@ -62,6 +63,7 @@ def main():
     #  'CST': [321.81104921077065, 161.35073145439281]}
     print(norm_info)
 
+    # load submit.csv
     submit = pd.read_csv('../data/submit.csv')
     # patient ID  preCST   VA  continue injection  CST  IRF  SRF  HRF
     print(submit.head())
@@ -128,10 +130,11 @@ def main():
         output_dim=args.num_classes
     ).to(device)
 
-    loss_func_reg = nn.MSELoss()
-    loss_func_cls = nn.BCEWithLogitsLoss()
+    loss_func_reg = nn.MSELoss()  # regression loss func
+    loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
+    # train
     for epoch in range(args.epochs):
         train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info)
         print(
@@ -142,41 +145,50 @@ def main():
             # f'val_acc, {val_acc:.4f} '
         )
 
+    # test
     test(test_loader, device, model, norm_info, submit)
 
 
 def score_reg(out, label, norm_info):
     new_out = out.clone()
     new_label = label.clone()
+    # (x - mean) / std = out
+    # x = out * std + mean
+
+    # pred
     new_out[:, 0] = new_out[:, 0] * norm_info['preCST'][1] + norm_info['preCST'][0]
     new_out[:, 1] = new_out[:, 1] * norm_info['VA'][1] + norm_info['VA'][0]
     new_out[:, 2] = new_out[:, 2] * norm_info['CST'][1] + norm_info['CST'][0]
 
+    # label
     new_label[:, 0] = new_label[:, 0] * norm_info['preCST'][1] + norm_info['preCST'][0]
     new_label[:, 1] = new_label[:, 1] * norm_info['VA'][1] + norm_info['VA'][0]
     new_label[:, 2] = new_label[:, 2] * norm_info['CST'][1] + norm_info['CST'][0]
 
+    # error rate in [-0.025, 0.025]
     error = new_out - new_label
     error = torch.div(error, new_label)
     error = torch.abs(error)
 
     mask = error[error <= 0.025]
-    return mask.sum().item()
+    return mask.sum().item()  # correct num
 
 
 def score_cls(out, label):
     new_out = out.clone()
     new_out = torch.sigmoid(new_out)
 
+    # sigmoid(new_out) >= 0.5 --> 1
+    # sigmoid(new_out) < 0.5 --> 0
     zero = torch.zeros_like(new_out)
     one = torch.ones_like(new_out)
     new_out = torch.where(new_out >= 0.5, one, new_out)
     new_out = torch.where(new_out < 0.5, zero, new_out)
-    new_out = new_out.long()
+    new_out = new_out.long()  # long
 
-    new_label = label.clone().long()
+    new_label = label.clone().long()  # long
 
-    cnt = torch.eq(new_out, new_label).sum().item()
+    cnt = torch.eq(new_out, new_label).sum().item()  # correct num
     return float(cnt)
 
 
@@ -191,9 +203,11 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
             device), img_labels.to(device)
 
         out = model(pre_img, after_img, img_feats)
+        # regression loss
         loss_reg = loss_func_reg(out[:, :3], img_labels[:, :3])
+        # classification loss
         loss_cls = loss_func_cls(out[:, 3:], img_labels[:, 3:])
-
+        # sum
         loss = loss_reg + loss_cls
 
         optimizer.zero_grad()
@@ -202,10 +216,9 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
 
         tot_loss += loss.item()
 
+        # calculate score
         score += (score_cls(out[:, 3:7], img_labels[:, 3:7]) + score_reg(out[:, :3], img_labels[:, :3], norm_info))
-        # y_pred = out.argmax(dim=1)
-        # correct = (y_pred == label).sum().item()
-        # tot_correct += correct
+
         tot_train += img_labels.size(0)
 
     return tot_loss / tot_train, score
@@ -214,20 +227,25 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
 @torch.no_grad()
 def test(test_loader, device, model, norm_info, submit):
     model.eval()
+
+    # mkdir ../outputs
     if not os.path.exists('../outputs'):
         os.makedirs('../outputs', exist_ok=True)
+
     for i, data in enumerate(test_loader):
         patient_ids, pre_img, after_img, img_feats = data
         pre_img, after_img, img_feats = pre_img.to(device), after_img.to(device), img_feats.to(device)
 
         out = model(pre_img, after_img, img_feats)
 
+        # regression transform
         new_reg = out[:, :3].clone()
 
         new_reg[:, 0] = new_reg[:, 0] * norm_info['preCST'][1] + norm_info['preCST'][0]
         new_reg[:, 1] = new_reg[:, 1] * norm_info['VA'][1] + norm_info['VA'][0]
         new_reg[:, 2] = new_reg[:, 2] * norm_info['CST'][1] + norm_info['CST'][0]
 
+        # classification transform
         new_cls = out[:, 3:7].clone()
         new_cls = torch.sigmoid(new_cls)
 
@@ -237,8 +255,12 @@ def test(test_loader, device, model, norm_info, submit):
         new_cls = torch.where(new_cls < 0.5, zero, new_cls)
         new_cls = new_cls.long()
 
+        # update submit by patient id index
         for out_index, patient_id in enumerate(patient_ids):
+            # get index from submit.csv
             csv_index = submit[submit['patient ID'] == patient_id].index.tolist()[0]
+
+            # preCST VA CST
             submit['preCST'][csv_index] = new_reg[out_index, 0]
             submit['VA'][csv_index] = new_reg[out_index, 1]
             submit['CST'][csv_index] = new_reg[out_index, 2]
@@ -249,9 +271,8 @@ def test(test_loader, device, model, norm_info, submit):
             submit['SRF'][csv_index] = new_cls[out_index][2]
             submit['HRF'][csv_index] = new_cls[out_index][3]
 
+    # write submit to ../outputs/submit_xxxxx.csv
     submit.to_csv(os.path.join('../outputs/', f'submit_{time.strftime("%Y-%m-%d", time.localtime())}.csv'), index=False)
-
-    # return tot_loss / tot_train, score
 
 
 # main
