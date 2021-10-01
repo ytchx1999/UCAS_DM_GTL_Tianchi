@@ -7,6 +7,7 @@ from torchsummary import summary
 import argparse
 import os
 import time
+from tqdm import tqdm
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
@@ -136,11 +137,11 @@ def main():
 
     # train
     for epoch in range(args.epochs):
-        train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info)
+        train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch)
         print(
             f'epoch: {epoch:02d}, '
             f'train_loss: {train_loss:.4f}, '
-            f'train_acc: {train_score:.4f}, '
+            f'train_score: {train_score:4d}, '
             # f'val_loss, {val_loss:.4f}, '
             # f'val_acc, {val_acc:.4f} '
         )
@@ -192,7 +193,7 @@ def score_cls(out, label):
     return float(cnt)
 
 
-def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info):
+def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch):
     model.train()
     tot_loss = 0
     score = 0
@@ -217,9 +218,18 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
         tot_loss += loss.item()
 
         # calculate score
-        score += (score_cls(out[:, 3:7], img_labels[:, 3:7]) + score_reg(out[:, :3], img_labels[:, :3], norm_info))
+        correct_num = (score_cls(out[:, 3:7], img_labels[:, 3:7]) + score_reg(out[:, :3], img_labels[:, :3], norm_info))
+        score += correct_num
 
         tot_train += img_labels.size(0)
+
+        print(
+            f'epoch: {epoch:02d}, '
+            f'iter: {i:02d}, '
+            f'batch_loss: {loss:.4f}, '
+            f'batch_score: {correct_num:4d}, '
+            f'tot_score: {score:4d}, '
+        )
 
     return tot_loss / tot_train, score
 
@@ -232,7 +242,7 @@ def test(test_loader, device, model, norm_info, submit):
     if not os.path.exists('../outputs'):
         os.makedirs('../outputs', exist_ok=True)
 
-    for i, data in enumerate(test_loader):
+    for i, data in tqdm(enumerate(test_loader)):
         patient_ids, pre_img, after_img, img_feats = data
         pre_img, after_img, img_feats = pre_img.to(device), after_img.to(device), img_feats.to(device)
 
