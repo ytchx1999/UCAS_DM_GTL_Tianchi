@@ -40,20 +40,19 @@ def preprocess_csv():
     print('train feats:', train_feats)
 
     # train labels (numpy)
-    train_labels = train_data[['preCST', 'preIRF', 'preSRF',
-                               'prePED', 'preHRF', 'VA',
-                               'continue injection', 'CST', 'IRF',
-                               'SRF', 'PED', 'HRF']].values
+    train_labels = train_data[['preCST', 'VA', 'CST',
+                               'continue injection', 'IRF', 'SRF', 'HRF',
+                               'preIRF', 'preSRF', 'prePED', 'preHRF', 'PED']].values
     # norm preCST, VA, CST
     # (x - mean) / std
     norm_info = {
         'preCST': [train_labels[:, 0].mean(), train_labels[:, 0].std()],
-        'VA': [train_labels[:, 5].mean(), train_labels[:, 5].std()],
-        'CST': [train_labels[:, 7].mean(), train_labels[:, 7].std()]
+        'VA': [train_labels[:, 1].mean(), train_labels[:, 1].std()],
+        'CST': [train_labels[:, 2].mean(), train_labels[:, 2].std()]
     }
     train_labels[:, 0] = (train_labels[:, 0] - norm_info['preCST'][0]) / norm_info['preCST'][1]
-    train_labels[:, 5] = (train_labels[:, 5] - norm_info['VA'][0]) / norm_info['VA'][1]
-    train_labels[:, 7] = (train_labels[:, 7] - norm_info['CST'][0]) / norm_info['CST'][1]
+    train_labels[:, 1] = (train_labels[:, 1] - norm_info['VA'][0]) / norm_info['VA'][1]
+    train_labels[:, 2] = (train_labels[:, 2] - norm_info['CST'][0]) / norm_info['CST'][1]
 
     # train labels (dict_torch)
     # train_labels_dict = {

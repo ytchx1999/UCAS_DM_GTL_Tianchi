@@ -71,15 +71,15 @@ class EyeDataset(Dataset):
                 if l_img_index.shape[0] != 0:
                     l_patient_id = id_index[l_img_index[0][0]]
                     # slice: shape(n, )
-                    l_img_feats = torch.from_numpy(feats[l_img_index[0][0]])
+                    l_img_feats = torch.from_numpy(feats[l_img_index[0][0]]).float()
                     if mode == 'train':
-                        l_img_labels = torch.from_numpy(labels[l_img_index[0][0]])
+                        l_img_labels = torch.from_numpy(labels[l_img_index[0][0]]).float()
 
                 if r_img_index.shape[0] != 0:
                     r_patient_id = id_index[r_img_index[0][0]]
-                    r_img_feats = torch.from_numpy(feats[r_img_index[0][0]])
+                    r_img_feats = torch.from_numpy(feats[r_img_index[0][0]]).float()
                     if mode == 'train':
-                        r_img_labels = torch.from_numpy(labels[r_img_index[0][0]])
+                        r_img_labels = torch.from_numpy(labels[r_img_index[0][0]]).float()
 
                 # pre, after img_path
                 l_pre_img_path = ''

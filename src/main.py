@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 import pickle
 from torchsummary import summary
 import argparse
@@ -8,7 +9,7 @@ import os
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from models.model import ResNet
+from models.model import ResNet, EyeNet
 from utils.dataset import EyeDataset
 
 
@@ -24,7 +25,7 @@ def main():
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
     parser.add_argument('--model_dir', type=str, default='../data/resnet18-5c106cde.pth')
-    parser.add_argument('--lr', type=float, default=0.001)
+    parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=20)
     args = parser.parse_args()
     print(args)
@@ -83,23 +84,106 @@ def main():
     # torch.Size([16, 3, 224, 224])
     # torch.Size([16, 5])
     # torch.Size([16, 12])
+
+    # for i, data in enumerate(train_loader):
+    #     pre_img, after_img, img_feats, img_labels = data
+    #     pre_img, after_img, img_feats, img_labels = pre_img.to(device), after_img.to(device), img_feats.to(
+    #         device), img_labels.to(device)
+    #
+    #     # if pre_img != None:
+    #     print(pre_img.shape)
+    #     # if after_img != None:
+    #     print(after_img.shape)
+    #     print(img_feats.shape)
+    #     print(img_labels.shape)
+    #
+    #     break
+
+    #########################################
+    # model
+    # resnet_18 = ResNet(args.model_dir, num_classes=args.num_classes).to(device)
+    # summary(resnet_18, input_size=(3, 224, 224))
+    model = EyeNet(
+        args.model_dir,
+        num_classes=16,
+        feat_dim=5,
+        hidden_dim=16,
+        output_dim=args.num_classes
+    ).to(device)
+
+    loss_func_reg = nn.MSELoss()
+    loss_func_cls = nn.BCEWithLogitsLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+
+    for epoch in range(args.epochs):
+        train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info)
+        print(
+            f'epoch: {epoch:02d}, '
+            f'train_loss: {train_loss:.4f}, '
+            f'train_acc: {train_score:.4f}, '
+            # f'val_loss, {val_loss:.4f}, '
+            # f'val_acc, {val_acc:.4f} '
+        )
+
+
+def score_reg(out, label, norm_info):
+    new_out = out.clone()
+    new_label = label.clone()
+    new_out[0] = new_out[0] * norm_info['preCST'][1] + norm_info['preCST'][0]
+    new_out[1] = new_out[1] * norm_info['VA'][1] + norm_info['VA'][0]
+    new_out[2] = new_out[2] * norm_info['CST'][1] + norm_info['CST'][0]
+
+    new_label[0] = new_label[0] * norm_info['preCST'][1] + norm_info['preCST'][0]
+    new_label[1] = new_label[1] * norm_info['VA'][1] + norm_info['VA'][0]
+    new_label[2] = new_label[2] * norm_info['CST'][1] + norm_info['CST'][0]
+
+    error = new_out - new_label
+    error = torch.div(error, new_label)
+    error = torch.abs(error)
+
+    mask = error[error <= 0.025]
+    return mask.sum().item()
+
+
+def score_cls(out, label):
+    cnt = 0
+    cnt = torch.eq(out, label)
+    # for i in range(out.shape[0]):
+    #     for j in range(out.shape[1]):
+    #         if out[i][j] == label[i][j]:
+    #             cnt += 1
+    return cnt
+
+
+def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info):
+    model.train()
+    tot_loss = 0
+    score = 0
+    tot_train = 0
     for i, data in enumerate(train_loader):
         pre_img, after_img, img_feats, img_labels = data
         pre_img, after_img, img_feats, img_labels = pre_img.to(device), after_img.to(device), img_feats.to(
             device), img_labels.to(device)
 
-        # if pre_img != None:
-        print(pre_img.shape)
-        # if after_img != None:
-        print(after_img.shape)
-        print(img_feats.shape)
-        print(img_labels.shape)
+        out = model(pre_img, after_img, img_feats)
+        loss_reg = loss_func_reg(out[:3, :], img_labels[:3, :])
+        loss_cls = loss_func_cls(out[3:, :], img_labels[3:, :])
 
-        break
+        loss = loss_reg + loss_cls
 
-    # model
-    resnet_18 = ResNet(args.model_dir, num_classes=args.num_classes).to(device)
-    summary(resnet_18, input_size=(3, 224, 224))
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        tot_loss += loss.item()
+
+        score += (score_cls(out[3:7, :], img_labels[3:7, :]) + score_reg(out[:3, :], img_labels[:3, :], norm_info))
+        # y_pred = out.argmax(dim=1)
+        # correct = (y_pred == label).sum().item()
+        # tot_correct += correct
+        tot_train += img_labels.size(0)
+
+    return tot_loss / tot_train, score
 
 
 # main
