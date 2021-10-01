@@ -48,6 +48,7 @@ python corr_csv.py
 ```
 
 Run model.
++ Hardware: Tesla V100 (32GB) * 1
 ```bash
 cd src/utils
 # processing .csv
