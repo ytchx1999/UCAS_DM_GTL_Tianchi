@@ -61,7 +61,7 @@ python main.py
 
 [https://drive.google.com/file/d/1peHPT9rheF3DHa_UwrWkO9GvEikd5RB4/view?usp=sharing](https://drive.google.com/file/d/1peHPT9rheF3DHa_UwrWkO9GvEikd5RB4/view?usp=sharing)
 
-![model](./data/model.png)
+![model](./data/baseline.png)
 
 ## Corr Analysis
 
