@@ -16,26 +16,27 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
-        self.resnet_50 = torchvision.models.resnet50()
+        self.resnet = torchvision.models.resnet152()
 
         # download or use cached model
         if not os.path.exists(self.pretrain_dir):
             # download
             # ResNet-18: https://download.pytorch.org/models/resnet18-5c106cde.pth
             # ResNet-50: https://download.pytorch.org/models/resnet50-19c8e357.pth
+            # ResNet-152: https://download.pytorch.org/models/resnet152-b121ed2d.pth
             url = 'https://download.pytorch.org/models/resnet50-19c8e357.pth'
             wget.download(url, "../../data/resnet50-19c8e357.pth")
 
         # load state dict (params) of the model
         state_dict_load = torch.load(self.pretrain_dir, map_location='cpu')
-        self.resnet_50.load_state_dict(state_dict_load)
+        self.resnet.load_state_dict(state_dict_load)
 
         # modify the last FC layer
-        num_features = self.resnet_50.fc.in_features
-        self.resnet_50.fc = nn.Linear(num_features, self.num_classes)
+        num_features = self.resnet.fc.in_features
+        self.resnet.fc = nn.Linear(num_features, self.num_classes)
 
     def forward(self, x):
-        x = self.resnet_50(x)
+        x = self.resnet(x)
         return x
 
 
@@ -62,7 +63,7 @@ class MLP(nn.Module):
     def forward(self, x):
         for i in range(self.num_layers - 1):
             x = F.relu(self.lins[i](x))
-            x = self.bns[i](x)
+            x = self.bns[i](x)  # batch norm
             x = F.dropout(x, p=0.5, training=self.training)
         x = self.lins[-1](x)
         return x
@@ -80,7 +81,7 @@ class EyeNet(nn.Module):
         self.resnet_pre = ResNet(self.pretrain_dir, num_classes=num_classes)
         self.resnet_after = ResNet(self.pretrain_dir, num_classes=num_classes)
 
-        # no grad in resnet-50
+        # freeze grad in resnet-50
         for param in self.resnet_pre.parameters():
             param.requires_grad = False
         for param in self.resnet_after.parameters():

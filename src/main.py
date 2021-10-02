@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--norm_std', type=float, default=0.2)
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
-    parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
+    parser.add_argument('--model_dir', type=str, default='../data/resnet152-b121ed2d.pth')
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=20)
     args = parser.parse_args()
@@ -34,7 +34,7 @@ def main():
 
     pd.set_option('mode.chained_assignment', None)  # pandas no warning
 
-    # transform
+    # train transform
     train_transform = transforms.Compose([
         transforms.RandomResizedCrop(224),
         transforms.RandomHorizontalFlip(),
@@ -42,6 +42,7 @@ def main():
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
     ])
 
+    # test transform
     test_transform = transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
@@ -53,12 +54,10 @@ def main():
     train_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_train'),
                                csv_dir=os.path.join(args.csv_dir, 'train_data.pk'),
                                transform=train_transform, mode='train')
-    # print(train_dataset.data_info[0])
 
     test_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_test'),
                               csv_dir=os.path.join(args.csv_dir, 'test_data.pk'),
                               transform=test_transform, mode='test')
-    # print(test_dataset.data_info[0])
 
     # dataloader
     train_loader = DataLoader(dataset=train_dataset, batch_size=args.batch_size, shuffle=True)
@@ -77,72 +76,22 @@ def main():
     # patient ID  preCST   VA  continue injection  CST  IRF  SRF  HRF
     print(submit.head())
 
-    # load train data
-    # with open('../data/train_data.pk', 'rb') as f:
-    #     train_id_index, train_feats, train_labels_dict = pickle.load(f)
-    # print(
-    #     'len train_id_index=', len(train_id_index),
-    #     'train_feats.shape=', train_feats.shape,
-    #     'len train_labels', len(train_labels_dict)
-    # )
-    #
-    # # load test data
-    # with open('../data/test_data.pk', 'rb') as f:
-    #     test_id_index, test_feats = pickle.load(f)
-    # print(
-    #     'len test_id_index=', len(test_id_index),
-    #     'test_feats.shape=', test_feats.shape
-    # )
-
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    # a simple test for dataloader (load a batch) -- success!
-    # torch.Size([16, 3, 224, 224])
-    # torch.Size([16, 3, 224, 224])
-    # torch.Size([16, 5])
-    # torch.Size([16, 12])
-
-    # for i, data in enumerate(train_loader):
-    #     patient_ids, pre_img, after_img, img_feats, img_labels = data
-    #     pre_img, after_img, img_feats, img_labels = pre_img.to(device), after_img.to(
-    #         device), img_feats.to(device), img_labels.to(device)
-    #
-    #     # if pre_img != None:
-    #     print(patient_id)
-    #     print(pre_img.shape)
-    #     # if after_img != None:
-    #     print(after_img.shape)
-    #     print(img_feats.shape)
-    #     print(img_labels.shape)
-    #
-    #     break
-
-    # for i, data in enumerate(test_loader):
-    #     patient_ids, pre_img, after_img, img_feats = data
-    #     pre_img, after_img, img_feats = pre_img.to(device), after_img.to(device), img_feats.to(device)
-    #
-    #     print(patient_id)
-    #     print(pre_img.shape)
-    #     print(after_img.shape)
-    #     print(img_feats.shape)
-
-    #########################################
     # model
-    # resnet_18 = ResNet(args.model_dir, num_classes=args.num_classes).to(device)
-    # summary(resnet_18, input_size=(3, 224, 224))
     model = EyeNet(
         args.model_dir,
-        num_classes=64,
+        num_classes=128,
         feat_dim=5,
-        hidden_dim=64,
+        hidden_dim=128,
         output_dim=args.num_classes
     ).to(device)
 
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)  # lr adjustment
 
     # train
     for epoch in range(args.epochs):
@@ -151,10 +100,15 @@ def main():
         print(
             f'epoch: {int(epoch):02d}, '
             f'train_loss: {train_loss:.4f}, '
-            f'train_score: {int(train_score):4d}, '
+            f'train_score: {train_score:.4f}, '
             # f'val_loss, {val_loss:.4f}, '
             # f'val_acc, {val_acc:.4f} '
         )
+    # ResNet-50
+    # epoch: 19, train_loss: 0.0745, train_score: 0.4303,
+
+    # ResNet-152
+    # epoch: 19, train_loss: 0.0716, train_score: 0.4356,
 
     # test
     test(test_loader, device, model, norm_info, submit)
@@ -237,13 +191,14 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
             f'epoch: {int(epoch):02d}, '
             f'iter: {i:02d}, '
             f'batch_loss: {loss:.4f}, '
-            f'batch_score: {int(correct_num):4d}, '
-            f'tot_score: {int(score):4d}, '
+            f'batch_correct_num: {int(correct_num):4d}, '
+            f'tot_score: {(score / (tot_train * 7)):.4f}, '
         )
 
     scheduler.step()
+    print(tot_train)
 
-    return tot_loss / tot_train, score
+    return tot_loss / tot_train, score / (tot_train * 7)
 
 
 @torch.no_grad()
