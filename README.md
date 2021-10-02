@@ -8,6 +8,12 @@ v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dcht
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
+[ResNet-50与训练模型下载](https://download.pytorch.org/models/resnet50-19c8e357.pth) 
+```bash
+cd data/
+wget https://download.pytorch.org/models/resnet50-19c8e357.pth
+```
+
 ## Result
 ![res2](./data/2021-10-01-1.png)
 

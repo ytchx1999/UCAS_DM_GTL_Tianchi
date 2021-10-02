@@ -10,31 +10,32 @@ import torch.nn.functional as F
 class ResNet(nn.Module):
     def __init__(self, pretrain_dir, num_classes=16):
         '''
-        :param pretain_dir: location of pretrained model resnet-18 (../../data/resnet18-5c106cde.pth)
+        :param pretain_dir: location of pretrained model resnet-50 (../../data/resnet50-19c8e357.pth)
         :param num_classes: label dims
         '''
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
-        self.resnet_18 = torchvision.models.resnet18()
+        self.resnet_50 = torchvision.models.resnet50()
 
         # download or use cached model
         if not os.path.exists(self.pretrain_dir):
             # download
-            # https://download.pytorch.org/models/resnet18-5c106cde.pth
-            url = 'https://download.pytorch.org/models/resnet18-5c106cde.pth'
-            wget.download(url, "../../data/resnet18-5c106cde.pth")
+            # ResNet-18: https://download.pytorch.org/models/resnet18-5c106cde.pth
+            # ResNet-50: https://download.pytorch.org/models/resnet50-19c8e357.pth
+            url = 'https://download.pytorch.org/models/resnet50-19c8e357.pth'
+            wget.download(url, "../../data/resnet50-19c8e357.pth")
 
         # load state dict (params) of the model
         state_dict_load = torch.load(self.pretrain_dir, map_location='cpu')
-        self.resnet_18.load_state_dict(state_dict_load)
+        self.resnet_50.load_state_dict(state_dict_load)
 
         # modify the last FC layer
-        num_features = self.resnet_18.fc.in_features
-        self.resnet_18.fc = nn.Linear(num_features, self.num_classes)
+        num_features = self.resnet_50.fc.in_features
+        self.resnet_50.fc = nn.Linear(num_features, self.num_classes)
 
     def forward(self, x):
-        x = self.resnet_18(x)
+        x = self.resnet_50(x)
         return x
 
 
@@ -68,7 +69,7 @@ class MLP(nn.Module):
 
 
 class EyeNet(nn.Module):
-    def __init__(self, pretrain_dir, num_classes=16, feat_dim=5, hidden_dim=16, output_dim=12):
+    def __init__(self, pretrain_dir, num_classes=64, feat_dim=5, hidden_dim=64, output_dim=12):
         super(EyeNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
@@ -79,12 +80,21 @@ class EyeNet(nn.Module):
         self.resnet_pre = ResNet(self.pretrain_dir, num_classes=num_classes)
         self.resnet_after = ResNet(self.pretrain_dir, num_classes=num_classes)
 
-        self.mlp = MLP(num_classes * 2 + feat_dim, hidden_dim, output_dim, num_layers=3)
+        # no grad in resnet-50
+        for param in self.resnet_pre.parameters():
+            param.requires_grad = False
+        for param in self.resnet_after.parameters():
+            param.requires_grad = False
+
+        self.mlp = MLP(num_classes * 2 + hidden_dim, hidden_dim, output_dim, num_layers=4)
+        # linear for feat
+        self.fc_feat = nn.Linear(feat_dim, hidden_dim)
 
     def forward(self, pre_img, after_img, feat):
         pre_img = self.resnet_pre(pre_img)
         after_img = self.resnet_after(after_img)
-        x = torch.cat([pre_img, after_img, feat], dim=1)
+        feat = self.fc_feat(feat)
+        x = torch.cat([feat, pre_img, after_img], dim=1)
         x = self.mlp(x)
         return x
 
@@ -93,10 +103,10 @@ if __name__ == '__main__':
     # resnet_18 = ResNet('../../data/resnet18-5c106cde.pth', num_classes=16)
     # summary(resnet_18, input_size=(3, 224, 224))
     model = EyeNet(
-        '../../data/resnet18-5c106cde.pth',
-        num_classes=16,
+        '../../data/resnet50-19c8e357.pth',
+        num_classes=64,
         feat_dim=5,
-        hidden_dim=16,
+        hidden_dim=64,
         output_dim=12
     )
     print(model)

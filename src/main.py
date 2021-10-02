@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--norm_std', type=float, default=0.2)
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
-    parser.add_argument('--model_dir', type=str, default='../data/resnet18-5c106cde.pth')
+    parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=20)
     args = parser.parse_args()
@@ -35,8 +35,16 @@ def main():
     pd.set_option('mode.chained_assignment', None)  # pandas no warning
 
     # transform
-    transform = transforms.Compose([
-        transforms.Resize((224, 224)),
+    train_transform = transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
+    ])
+
+    test_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
     ])
@@ -44,12 +52,12 @@ def main():
     # load dataset
     train_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_train'),
                                csv_dir=os.path.join(args.csv_dir, 'train_data.pk'),
-                               transform=transform, mode='train')
+                               transform=train_transform, mode='train')
     # print(train_dataset.data_info[0])
 
     test_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_test'),
                               csv_dir=os.path.join(args.csv_dir, 'test_data.pk'),
-                              transform=transform, mode='test')
+                              transform=test_transform, mode='test')
     # print(test_dataset.data_info[0])
 
     # dataloader
@@ -125,20 +133,21 @@ def main():
     # summary(resnet_18, input_size=(3, 224, 224))
     model = EyeNet(
         args.model_dir,
-        num_classes=16,
+        num_classes=64,
         feat_dim=5,
-        hidden_dim=16,
+        hidden_dim=64,
         output_dim=args.num_classes
     ).to(device)
 
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.1)
 
     # train
     for epoch in range(args.epochs):
         train_loss, train_score = train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info,
-                                        epoch)
+                                        epoch, scheduler)
         print(
             f'epoch: {int(epoch):02d}, '
             f'train_loss: {train_loss:.4f}, '
@@ -194,7 +203,7 @@ def score_cls(out, label):
     return float(cnt)
 
 
-def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch):
+def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, norm_info, epoch, scheduler):
     model.train()
     tot_loss = 0
     score = 0
@@ -231,6 +240,8 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
             f'batch_score: {int(correct_num):4d}, '
             f'tot_score: {int(score):4d}, '
         )
+
+    scheduler.step()
 
     return tot_loss / tot_train, score
 
