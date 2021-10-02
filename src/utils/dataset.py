@@ -24,9 +24,9 @@ class EyeDataset(Dataset):
                  else, return pre_img, after_img, img_feats (no labels)
         '''
         if self.mode == 'train':
-            pre_img_path, after_img_path, img_feats, img_labels = self.data_info[item]
+            patient_id, pre_img_path, after_img_path, img_feats, img_labels = self.data_info[item]
         else:
-            pre_img_path, after_img_path, img_feats = self.data_info[item]
+            patient_id, pre_img_path, after_img_path, img_feats = self.data_info[item]
 
         if pre_img_path != '':
             pre_img = Image.open(pre_img_path).convert('RGB')
@@ -44,8 +44,8 @@ class EyeDataset(Dataset):
                 after_img = self.transform(after_img)
 
         if self.mode != 'train':
-            return pre_img, after_img, img_feats
-        return pre_img, after_img, img_feats, img_labels
+            return patient_id, pre_img, after_img, img_feats
+        return patient_id, pre_img, after_img, img_feats, img_labels
 
     def __len__(self):
         return len(self.data_info)
@@ -71,15 +71,15 @@ class EyeDataset(Dataset):
                 if l_img_index.shape[0] != 0:
                     l_patient_id = id_index[l_img_index[0][0]]
                     # slice: shape(n, )
-                    l_img_feats = torch.from_numpy(feats[l_img_index[0][0]])
+                    l_img_feats = torch.from_numpy(feats[l_img_index[0][0]]).float()
                     if mode == 'train':
-                        l_img_labels = torch.from_numpy(labels[l_img_index[0][0]])
+                        l_img_labels = torch.from_numpy(labels[l_img_index[0][0]]).float()
 
                 if r_img_index.shape[0] != 0:
                     r_patient_id = id_index[r_img_index[0][0]]
-                    r_img_feats = torch.from_numpy(feats[r_img_index[0][0]])
+                    r_img_feats = torch.from_numpy(feats[r_img_index[0][0]]).float()
                     if mode == 'train':
-                        r_img_labels = torch.from_numpy(labels[r_img_index[0][0]])
+                        r_img_labels = torch.from_numpy(labels[r_img_index[0][0]]).float()
 
                 # pre, after img_path
                 l_pre_img_path = ''
@@ -89,6 +89,7 @@ class EyeDataset(Dataset):
 
                 for _, _, files in os.walk(os.path.join(data_dir, sub_dir)):
                     for file in files:
+                        # print(file)
                         if file[9] == 'L' and file[-5] == '1':
                             l_pre_img_path = os.path.join(data_dir, sub_dir, file)
                         elif file[9] == 'L' and file[-5] == '2':
@@ -105,14 +106,14 @@ class EyeDataset(Dataset):
                 # l_img_labels (torch)
                 if l_img_index.shape[0] != 0 and l_pre_img_path != '' and l_after_img_path != '':
                     if mode == 'train':
-                        data_info.append((l_pre_img_path, l_after_img_path, l_img_feats, l_img_labels))
+                        data_info.append((l_patient_id, l_pre_img_path, l_after_img_path, l_img_feats, l_img_labels))
                     else:
-                        data_info.append((l_pre_img_path, l_after_img_path, l_img_feats))
+                        data_info.append((l_patient_id, l_pre_img_path, l_after_img_path, l_img_feats))
                 if r_img_index.shape[0] != 0 and r_pre_img_path != '' and r_after_img_path != '':
                     if mode == 'train':
-                        data_info.append((r_pre_img_path, r_after_img_path, r_img_feats, r_img_labels))
+                        data_info.append((r_patient_id, r_pre_img_path, r_after_img_path, r_img_feats, r_img_labels))
                     else:
-                        data_info.append((r_pre_img_path, r_after_img_path, r_img_feats))
+                        data_info.append((r_patient_id, r_pre_img_path, r_after_img_path, r_img_feats))
 
         return data_info
 
@@ -124,7 +125,7 @@ if __name__ == '__main__':
 
     cnt = 0
     for i in range(len(train_dataset.data_info)):
-        pre_img_path, after_img_path, img_feats, img_labels = train_dataset.data_info[i]
+        patient_id, pre_img_path, after_img_path, img_feats, img_labels = train_dataset.data_info[i]
         if pre_img_path == '' or after_img_path == '':
             cnt += 1
     print(cnt)
@@ -135,14 +136,15 @@ if __name__ == '__main__':
 
     cnt = 0
     for i in range(len(test_dataset.data_info)):
-        pre_img_path, after_img_path, img_feats = test_dataset.data_info[i]
+        patient_id, pre_img_path, after_img_path, img_feats = test_dataset.data_info[i]
         if pre_img_path == '' or after_img_path == '':
             cnt += 1
     print(cnt)
 
     # train dataset
 
-    # ('../../dataset/mix_train/0000-1726/0000-1726L_1.jpg',
+    # ('0000-1726L',
+    #  '../../dataset/mix_train/0000-1726/0000-1726L_1.jpg',
     #  '../../dataset/mix_train/0000-1726/0000-1726L_2.jpg',
     #  tensor([0.0136, 0.0244, 0.0288, 0.0075, 0.0000], dtype=torch.float64),
     #  tensor([-0.7330,  0.0000,  0.0000,  0.0000,  0.0000, -0.1084,  0.0000, -0.6558,
@@ -154,7 +156,8 @@ if __name__ == '__main__':
 
     # test
 
-    # ('../../dataset/mix_test/0000-0069/0000-0069R_1.jpg',
+    # ('0000-0069R',
+    #  '../../dataset/mix_test/0000-0069/0000-0069R_1.jpg',
     #  '../../dataset/mix_test/0000-0069/0000-0069R_2.jpg',
     #  tensor([0.0330, 0.0440, 0.0651, 0.0461, 0.1625], dtype=torch.float64))
     # 361
