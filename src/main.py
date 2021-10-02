@@ -142,7 +142,7 @@ def main():
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=15, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
     # train
     for epoch in range(args.epochs):

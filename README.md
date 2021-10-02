@@ -15,9 +15,10 @@ wget https://download.pytorch.org/models/resnet50-19c8e357.pth
 ```
 
 ## Result
-![res2](./data/2021-10-01-1.png)
-
-![res](./data/2021-10-01.png)
+|Date  | Score | Rank |
+|:-:|:-:|:-:|
+| 2021-10-02 | 0.3716 | 43 |
+| 2021-10-01 | 0.2853 | 68 |
 
 ## Branch Usage
 baseline: `tianchi_v2`
@@ -66,9 +67,18 @@ python preprocess_csv.py
 # load data
 cd ..
 python main.py
+# or run in background
+nohup python main.py > ../outputs/result.log 2>&1 &
+# check result
+tail -f ../outputs/result.log
 ```
 
 ## Baseline模型结构
+一些trick：
++ 训练图像特征增强，测试保持不变
++ 换了resnet50（并且冻结了参数，训练样本太少了）
++ 特征加了个linear层，增加了hidden_dim的数量
++ 隔几个epoch调整学习率
 
 ![model](./data/baseline.png)
 
