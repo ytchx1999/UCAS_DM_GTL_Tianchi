@@ -19,10 +19,11 @@ wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
 
 ## Result
 
-![10-2](./data/2021-10-02.png)
+<!-- ![10-2](./data/2021-10-02.png) -->
 
 |Date  | Score | Rank |
 |:-:|:-:|:-:|
+| 2021-10-02 | 0.3807 | 41 |
 | 2021-10-02 | 0.3716 | 44 |
 | 2021-10-01 | 0.2853 | 68 |
 
