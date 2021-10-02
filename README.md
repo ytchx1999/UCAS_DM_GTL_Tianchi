@@ -15,9 +15,12 @@ wget https://download.pytorch.org/models/resnet50-19c8e357.pth
 ```
 
 ## Result
+
+![10-2](./data/2021-10-02.png)
+
 |Date  | Score | Rank |
 |:-:|:-:|:-:|
-| 2021-10-02 | 0.3716 | 43 |
+| 2021-10-02 | 0.3716 | 44 |
 | 2021-10-01 | 0.2853 | 68 |
 
 ## Branch Usage
