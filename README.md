@@ -1,5 +1,5 @@
 # UCAS_DM_GTL_Tianchi
-[[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
+[[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL] | [[Leaderboard](https://tianchi.aliyun.com/competition/entrance/531929/rankingList)]
 
 ## Download dataset
 v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing](https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing)
@@ -8,10 +8,13 @@ v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dcht
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
-[ResNet-50与训练模型下载](https://download.pytorch.org/models/resnet50-19c8e357.pth) 
+**ResNet预训练模型下载**
 ```bash
 cd data/
+# download ResNet-50
 wget https://download.pytorch.org/models/resnet50-19c8e357.pth
+# download ResNet-152 
+wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
 ```
 
 ## Result
