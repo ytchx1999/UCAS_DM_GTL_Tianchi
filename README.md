@@ -28,23 +28,23 @@ wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
 | 2021-10-01 | 0.2853 | 68 |
 
 ## Branch Usage
-baseline: `tianchi_v2`
+baseline: `tianchi_v3`
 
 [《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
 
 ```bash
 git clone git@github.com:ytchx1999/UCAS_DM_GTL_Tianchi.git
 # create and checkout the branch
-git checkout -b tianchi_v2
+git checkout -b tianchi_v3
 # or only checkout the branch
-git checkout tianchi_v2
+git checkout tianchi_v3
 git checkout main
 # pull from tianchi_v2 branch
-git pull origin tianchi_v2:tianchi_v2
+git pull origin tianchi_v3:tianchi_v3
 
 git add ...
 git commit ...
-git push -u origin tianchi_v2:tianchi_v2
+git push -u origin tianchi_v3:tianchi_v3
 ```
 
 ## Environment
@@ -87,7 +87,7 @@ tail -f ../outputs/result.log
 + 特征加了个linear层，增加了hidden_dim的数量
 + 隔几个epoch调整学习率
 
-![model](./data/baseline.png)
+![model](./data/model.png)
 
 ## Corr Analysis
 
