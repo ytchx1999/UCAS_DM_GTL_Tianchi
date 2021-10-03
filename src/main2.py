@@ -11,7 +11,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 
-from models.model import ResNet, EyeNet
+from models.model2 import ResNet, EYENet
 from utils.dataset import EyeDataset
 
 
@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--norm_std', type=float, default=0.2)
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
-    parser.add_argument('--model_dir', type=str, default='../data/resnet152-b121ed2d.pth')
+    parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=20)
     args = parser.parse_args()
@@ -80,12 +80,20 @@ def main():
     print(device)
 
     # model
-    model = EyeNet(
+    # model = EyeNet(
+    #     args.model_dir,
+    #     num_classes=128,
+    #     feat_dim=5,
+    #     hidden_dim=128,
+    #     output_dim=args.num_classes
+    # ).to(device)
+    model = EYENet(
         args.model_dir,
-        num_classes=128,
-        feat_dim=5,
-        hidden_dim=128,
-        output_dim=args.num_classes
+        channels=512,
+        classes1=10,
+        classes2=10,
+        base=64,
+        feature_dims=5
     ).to(device)
 
     loss_func_reg = nn.MSELoss()  # regression loss func
@@ -194,7 +202,7 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
             f'batch_correct_num: {int(correct_num):4d}, '
             f'tot_score: {(score / (tot_train * 7)):.4f}, '
         )
-        # print(loss_reg.item(), loss_cls.item())
+        print(loss_reg.item(), loss_cls.item())
 
     scheduler.step()
     print(tot_train)
