@@ -28,7 +28,7 @@ def main():
     parser.add_argument('--csv_dir', type=str, default='../data/')
     parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
     parser.add_argument('--lr', type=float, default=0.01)
-    parser.add_argument('--epochs', type=int, default=20)
+    parser.add_argument('--epochs', type=int, default=30)
     args = parser.parse_args()
     print(args)
 
@@ -90,16 +90,18 @@ def main():
     model = EYENet(
         args.model_dir,
         channels=512,
-        classes1=10,
-        classes2=10,
+        classes1=64,
+        classes2=64,
         base=64,
-        feature_dims=5
+        feature_dims=5,
+        hidden_dim=64,
+        output_dim=12
     ).to(device)
 
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)  # lr adjustment
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)  # lr adjustment
 
     # train
     for epoch in range(args.epochs):

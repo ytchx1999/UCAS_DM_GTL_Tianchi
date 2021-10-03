@@ -16,7 +16,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
-        self.resnet_50 = torchvision.models.resnet50()
+        self.resnet = torchvision.models.resnet50()
 
         # download or use cached model
         if not os.path.exists(self.pretrain_dir):
@@ -27,12 +27,10 @@ class ResNet(nn.Module):
 
         # load state dict (params) of the model
         state_dict_load = torch.load(self.pretrain_dir, map_location='cpu')
-        self.resnet_50.load_state_dict(state_dict_load)
+        self.resnet.load_state_dict(state_dict_load)
 
         # modify the last FC layer
-        self.resnet = nn.Sequential(*list(self.resnet_50.children())[:-5])
-        # num_features = self.resnet_50.fc.in_features
-        # self.resnet_50.fc = nn.Linear(num_features, 16)
+        self.resnet = nn.Sequential(*list(self.resnet.children())[:-5])
 
     def forward(self, x):
         x = self.resnet(x)
@@ -129,7 +127,7 @@ class Mixup(nn.Module):
 
 
 class EYENet(nn.Module):
-    def __init__(self, pretrained, channels, classes1, classes2, base, feature_dims):
+    def __init__(self, pretrained, channels, classes1, classes2, base, feature_dims, hidden_dim=64, output_dim=12):
         super(EYENet, self).__init__()
         self.pre_resnet = ResNet(pretrained)
         self.aft_resnet = ResNet(pretrained)
@@ -140,10 +138,11 @@ class EYENet(nn.Module):
         for param in self.aft_resnet.parameters():
             param.requires_grad = False
 
-        self.linear = nn.Linear(classes1 + classes2 + feature_dims, 12)
+        self.fc_feat = nn.Linear(feature_dims, hidden_dim)
+        # self.linear = nn.Linear(classes1 + classes2 + hidden_dim, output_dim)
         # self.linear.apply(self.init_weights)
 
-        self.mlp = MLP(classes1 + classes2 + feature_dims, 64, 12, num_layers=4)
+        self.mlp = MLP(classes1 + classes2 + hidden_dim, hidden_dim, output_dim, num_layers=4)
 
     def forward(self, x1, x2, x3):
         x1 = self.pre_resnet(x1)
@@ -151,6 +150,7 @@ class EYENet(nn.Module):
         x = torch.cat([x1, x2], dim=1)
 
         x = self.mix(x)
+        x3 = self.fc_feat(x3)
         x = torch.cat([x, x3], dim=1)
 
         # x = self.linear(x)
