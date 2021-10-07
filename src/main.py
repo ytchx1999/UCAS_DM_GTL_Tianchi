@@ -26,7 +26,8 @@ def main():
     parser.add_argument('--norm_std', type=float, default=0.2)
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
-    parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
+    parser.add_argument('--model_dir', type=str,
+                        default='../data/resnet152-b121ed2d.pth')  # resnet50-19c8e357.pth, resnet152-b121ed2d.pth
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=30)
     args = parser.parse_args()
@@ -93,7 +94,7 @@ def main():
         classes1=64,
         classes2=64,
         base=64,
-        feature_dims=3,
+        feature_dims=1,
         hidden_dim=64,
         output_dim=12
     ).to(device)
@@ -101,7 +102,7 @@ def main():
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)  # lr adjustment
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)  # lr adjustment
 
     # train
     for epoch in range(args.epochs):

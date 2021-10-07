@@ -16,7 +16,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
-        self.resnet = torchvision.models.resnet50()
+        self.resnet = torchvision.models.resnet152()
 
         # download or use cached model
         if not os.path.exists(self.pretrain_dir):
@@ -155,7 +155,7 @@ class EYENet(nn.Module):
         x = self.mix(x)
 
         diag, anti = x3[:, -2].long(), x3[:, -1].long()
-        x3 = x3[:, :-2]
+        x3 = x3[:, 2:3]
         x3 = self.fc_feat(x3)
         x = torch.cat([x, x3], dim=1)
         x = x + self.diag_encoder(diag)
