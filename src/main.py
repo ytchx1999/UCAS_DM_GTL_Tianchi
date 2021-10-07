@@ -93,7 +93,7 @@ def main():
         classes1=64,
         classes2=64,
         base=64,
-        feature_dims=5,
+        feature_dims=3,
         hidden_dim=64,
         output_dim=12
     ).to(device)

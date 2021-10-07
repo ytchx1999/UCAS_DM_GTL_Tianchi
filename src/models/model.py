@@ -138,6 +138,9 @@ class EYENet(nn.Module):
         for param in self.aft_resnet.parameters():
             param.requires_grad = False
 
+        self.diag_encoder = nn.Embedding(20, embedding_dim=classes1 + classes2 + hidden_dim)
+        self.anti_encoder = nn.Embedding(20, embedding_dim=classes1 + classes2 + hidden_dim)
+
         self.fc_feat = nn.Linear(feature_dims, hidden_dim)
         # self.linear = nn.Linear(classes1 + classes2 + hidden_dim, output_dim)
         # self.linear.apply(self.init_weights)
@@ -150,8 +153,13 @@ class EYENet(nn.Module):
         x = torch.cat([x1, x2], dim=1)
 
         x = self.mix(x)
+
+        diag, anti = x3[:, -2].long(), x3[:, -1].long()
+        x3 = x3[:, :-2]
         x3 = self.fc_feat(x3)
         x = torch.cat([x, x3], dim=1)
+        x = x + self.diag_encoder(diag)
+        x = x + self.anti_encoder(anti)
 
         # x = self.linear(x)
         x = self.mlp(x)
@@ -167,8 +175,18 @@ class EYENet(nn.Module):
 
 if __name__ == '__main__':
     # resnet_18 = ResNet('../../data/resnet18-5c106cde.pth', num_classes=2)
-    eye = EYENet('../../data/resnet50-19c8e357.pth', 512, 10, 10, 64, 5)
+    # eye = EYENet('../../data/resnet50-19c8e357.pth', 512, 10, 10, 64, 5)
+    eye = EYENet(
+        '../../data/resnet50-19c8e357.pth',
+        channels=512,
+        classes1=64,
+        classes2=64,
+        base=64,
+        feature_dims=3,
+        hidden_dim=64,
+        output_dim=12
+    )
     print(eye)
     # print(resnet_18)
-    summary(eye, input_size=[(3, 32, 32), (3, 32, 32), (1, 5)], device='cpu')
+    # summary(eye, input_size=[(3, 32, 32), (3, 32, 32), (5)], device='cpu')
     # print(os.path.exists('./resnet18-5c106cde.pth'))
