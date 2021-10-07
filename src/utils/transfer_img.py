@@ -12,13 +12,30 @@ import torchvision.transforms as transforms
 from PIL import Image
 import wget
 
+config = {
+    'num_images': 3
+}
 
-def read_img(path):
-    transform = transforms.Compose([
-        transforms.Resize(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.5], [0.5])
-    ])
+
+def transform_func(flag):
+    if flag == 'train':
+        transform = transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
+        ])
+    elif flag == 'test':
+        transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.2, 0.2, 0.2])
+        ])
+    return transform
+
+def read_img(path, flag, num):
+    transform = transform_func(flag)
     lb, la, rb, ra = [], [], [], []
     n1, n2, n3, n4 = 0, 0, 0, 0
     if not os.path.isdir(path):
@@ -27,19 +44,19 @@ def read_img(path):
         currpath = os.path.join(path, pic)
         if currpath[-4:] != '.jpg' or cv2.imread(currpath).shape[1] != 772:
             continue
-        if isinstance(la, int) and pic[9] == 'L' and pic[11] == '2':
+        if isinstance(la, int) and pic[9] == 'L' and pic[11] == '2' and n2 < num:
             la = Image.open(currpath).convert('RGB')
             la = transform(la)
             n2 += 1
-        elif isinstance(lb, int) and pic[9] == 'L' and pic[11] == '1':
+        elif isinstance(lb, int) and pic[9] == 'L' and pic[11] == '1' and n1 < num:
             lb = Image.open(currpath).convert('RGB')
             lb = transform(lb)
             n1 += 1
-        elif isinstance(rb, int) and pic[9] == 'R' and pic[11] == '1':
+        elif isinstance(rb, int) and pic[9] == 'R' and pic[11] == '1' and n3 < num:
             rb = Image.open(currpath).convert('RGB')
             rb = transform(rb)
             n3 += 1
-        elif isinstance(ra, int) and pic[9] == 'R' and pic[11] == '2':
+        elif isinstance(ra, int) and pic[9] == 'R' and pic[11] == '2' and n4 < num:
             ra = Image.open(currpath).convert('RGB')
             ra = transform(ra)
             n4 += 1
@@ -80,26 +97,22 @@ class FeatureExtraction:
                     for user in os.listdir(os.path.join(root, Set)):
                         dirpath = os.path.join(f'{root}/{Set}', user)
                         # 返回left_before, left_after, right_before, right_after
-                        left_before, left_after, right_before, right_after = read_img(dirpath)
+                        left_before, left_after, right_before, right_after = read_img(dirpath, trainval, config['num_images'])
                         if isinstance(left_before, torch.Tensor):
                             left_before = self.model(left_before)
-                            left_before = torch.sum(left_before, dim=0)
-                            left_before = torch.squeeze(left_before, dim=0)
+                            left_before = torch.cat(left_before, dim=0)
                             pickle.dump(left_before, os.path.join(dirpath, user+'L_1.pkl'))
                         if isinstance(left_after, torch.Tensor):
                             left_after = self.model(left_after)
-                            left_after = torch.sum(left_after, dim=0)
-                            left_after = torch.squeeze(left_after, dim=0)
+                            left_after = torch.cat(left_after, dim=0)
                             pickle.dump(left_after, os.path.join(dirpath, user+'L_2.pkl'))
                         if isinstance(right_before, torch.Tensor):
                             right_before = self.model(right_before)
-                            right_before = torch.sum(right_before, dim=0)
-                            right_before = torch.squeeze(right_before, dim=0)
+                            right_before = torch.cat(right_before, dim=0)
                             pickle.dump(right_before, os.path.join(dirpath, user+'R_1.pkl'))
                         if isinstance(right_after, torch.Tensor):
                             right_after = self.model(right_after)
-                            right_after = torch.sum(right_after, dim=0)
-                            right_after = torch.squeeze(right_after, dim=0)
+                            right_after = torch.cat(right_after, dim=0)
                             pickle.dump(right_after, os.path.join(dirpath, user+'R_2.pkl'))
 
 
@@ -126,9 +139,14 @@ class ResNet(nn.Module):
         self.resnet.load_state_dict(state_dict_load)
 
         # modify the last FC layer
-        self.resnet = nn.Sequential(*list(self.resnet.children())[:-10])
+        # self.resnet = nn.Sequential(*list(self.resnet.children())[:-1])
 
     def forward(self, x):
         x = self.resnet(x)
         return x
 
+
+if __name__ == "__main__":
+    from torchsummary import summary
+    model = torchvision.models.resnet18()
+    summary(model, (3, 224, 224), device='cpu')
