@@ -2,7 +2,10 @@
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL] | [[Leaderboard](https://tianchi.aliyun.com/competition/entrance/531929/rankingList)]
 
 ## Download dataset
+
 v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing](https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing)
+
+数据集补充特征(pkl): [https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download](https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download)
 
 v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
@@ -23,28 +26,30 @@ wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
 
 |Date  | Score | Rank |
 |:-:|:-:|:-:|
+| 2021-10-08 | 0.4104 | 27 |
+| 2021-10-07 | 0.3973 | 37 |
 | 2021-10-02 | 0.3807 | 41 |
 | 2021-10-02 | 0.3716 | 44 |
 | 2021-10-01 | 0.2853 | 68 |
 
 ## Branch Usage
-baseline: `tianchi_v3`
+baseline: `tianchi_v4`
 
 [《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
 
 ```bash
 git clone git@github.com:ytchx1999/UCAS_DM_GTL_Tianchi.git
 # create and checkout the branch
-git checkout -b tianchi_v3
+git checkout -b tianchi_v4
 # or only checkout the branch
-git checkout tianchi_v3
+git checkout tianchi_v4
 git checkout main
-# pull from tianchi_v2 branch
-git pull origin tianchi_v3:tianchi_v3
+# pull from tianchi_v4 branch
+git pull origin tianchi_v4:tianchi_v4
 
 git add ...
 git commit ...
-git push -u origin tianchi_v3:tianchi_v3
+git push -u origin tianchi_v4:tianchi_v4
 ```
 
 ## Environment
