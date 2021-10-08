@@ -26,7 +26,7 @@ def main():
     parser.add_argument('--norm_std', type=float, default=0.2)
     parser.add_argument('--basic_data_dir', type=str, default='../dataset/')
     parser.add_argument('--csv_dir', type=str, default='../data/')
-    parser.add_argument('--model_dir', type=str, default='../data/resnet50-19c8e357.pth')
+    parser.add_argument('--model_dir', type=str, default='../data/resnet152-b121ed2d.pth')
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--epochs', type=int, default=30)
     args = parser.parse_args()
@@ -53,10 +53,12 @@ def main():
     # load dataset
     train_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_train'),
                                csv_dir=os.path.join(args.csv_dir, 'train_data.pk'),
+                               pkl_dir=os.path.join(args.basic_data_dir, 'pkl_train'),
                                transform=train_transform, mode='train')
 
     test_dataset = EyeDataset(data_dir=os.path.join(args.basic_data_dir, 'mix_test'),
                               csv_dir=os.path.join(args.csv_dir, 'test_data.pk'),
+                              pkl_dir=os.path.join(args.basic_data_dir, 'pkl_test'),
                               transform=test_transform, mode='test')
 
     # dataloader
@@ -93,7 +95,7 @@ def main():
         classes1=64,
         classes2=64,
         base=64,
-        feature_dims=5,
+        feature_dims=1,
         hidden_dim=64,
         output_dim=12
     ).to(device)
@@ -101,7 +103,7 @@ def main():
     loss_func_reg = nn.MSELoss()  # regression loss func
     loss_func_cls = nn.BCEWithLogitsLoss()  # classification loss func
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)  # lr adjustment
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)  # lr adjustment
 
     # train
     for epoch in range(args.epochs):
@@ -173,11 +175,11 @@ def train(train_loader, device, model, loss_func_reg, loss_func_cls, optimizer, 
     score = 0
     tot_train = 0
     for i, data in enumerate(train_loader):
-        patient_ids, pre_img, after_img, img_feats, img_labels = data
-        pre_img, after_img, img_feats, img_labels = pre_img.to(device), after_img.to(device), img_feats.to(
-            device), img_labels.to(device)
+        patient_ids, pre_img, after_img, pre_pkl, after_pkl, img_feats, img_labels = data
+        pre_img, after_img, pre_pkl, after_pkl, img_feats, img_labels = pre_img.to(device), after_img.to(
+            device), pre_pkl.to(device), after_pkl.to(device), img_feats.to(device), img_labels.to(device)
 
-        out = model(pre_img, after_img, img_feats)
+        out = model(pre_img, after_img, img_feats, pre_pkl, after_pkl)
         # regression loss
         loss_reg = loss_func_reg(out[:, :3], img_labels[:, :3])
         # classification loss
@@ -221,10 +223,11 @@ def test(test_loader, device, model, norm_info, submit):
         os.makedirs('../outputs', exist_ok=True)
 
     for i, data in tqdm(enumerate(test_loader)):
-        patient_ids, pre_img, after_img, img_feats = data
-        pre_img, after_img, img_feats = pre_img.to(device), after_img.to(device), img_feats.to(device)
+        patient_ids, pre_img, after_img, pre_pkl, after_pkl, img_feats = data
+        pre_img, after_img, pre_pkl, after_pkl, img_feats = pre_img.to(device), after_img.to(device), pre_pkl.to(
+            device), after_pkl.to(device), img_feats.to(device)
 
-        out = model(pre_img, after_img, img_feats)
+        out = model(pre_img, after_img, img_feats, pre_pkl, after_pkl)
 
         # regression transform
         new_reg = out[:, :3].clone()

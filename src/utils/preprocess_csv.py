@@ -10,10 +10,8 @@ def preprocess_csv():
     train_id_index: dict, {'patient ID': 0, ...}
     train_feats: torch_tensor, L2 normalization
     train_labels_dict: dict, {'preCST': torch.tensor(...), ...}
-
     test_id_index: dict, {'patient ID': 0, ...}
     test_feats: torch_tensor, L2 normalization
-
     :return: None, saved in ../../data/train_data.pk, ../../data/test_data.pk
     '''
     ########################
@@ -32,10 +30,13 @@ def preprocess_csv():
     print('train id:', train_id_index)
 
     # train features (numpy)
-    train_feats = train_data[['gender', 'age', 'diagnosis', 'preVA', 'anti-VEGF']].values
+    train_feats = train_data[['gender', 'age', 'preVA']].values
     train_feats = torch.from_numpy(train_feats)
+    train_feats_emb = train_data[['diagnosis', 'anti-VEGF']].values
+    train_feats_emb = torch.from_numpy(train_feats_emb)
     # L2 Normalize
     train_feats = F.normalize(train_feats, p=2, dim=0)
+    train_feats = torch.cat([train_feats, train_feats_emb], dim=1)
     train_feats = train_feats.numpy()
     print('train feats:', train_feats)
 
@@ -92,9 +93,12 @@ def preprocess_csv():
     print('test id:', test_id_index)
 
     # test features (numpy)
-    test_feats = test_data[['gender', 'age', 'diagnosis', 'preVA', 'anti-VEGF']].values
+    test_feats = test_data[['gender', 'age', 'preVA']].values
     test_feats = torch.from_numpy(test_feats)
+    test_feats_emb = test_data[['diagnosis', 'anti-VEGF']].values
+    test_feats_emb = torch.from_numpy(test_feats_emb)
     test_feats = F.normalize(test_feats, p=2, dim=0)
+    test_feats = torch.cat([test_feats, test_feats_emb], dim=1)
     test_feats = test_feats.numpy()
     print('test feats:', test_feats)
 

@@ -34,6 +34,7 @@ def transform_func(flag):
         ])
     return transform
 
+
 def read_img(path, flag, num):
     print(path)
     transform = transform_func(flag)
@@ -82,7 +83,7 @@ def read_img(path, flag, num):
     if n4 > 0:
         ra = torch.stack(ra)
     return lb, la, rb, ra
-                    
+
 
 # path = '../../dataset/split'
 class FeatureExtraction:
@@ -90,35 +91,42 @@ class FeatureExtraction:
         super(FeatureExtraction, self).__init__()
         self.model = ResNet('../../data/resnet50-19c8e357.pth')
         for trainval in os.listdir(path):
+            if trainval[0] == '.':
+                continue
             root = os.path.join(path, trainval)
-            root1 = os.path.join(path+'1', trainval)
+            root1 = os.path.join(path + '1', trainval)
             if os.path.isdir(root):
                 for Set in os.listdir(root):
                     if not os.path.isdir(os.path.join(root, Set)):
                         continue
                     for user in os.listdir(os.path.join(root, Set)):
+                        if user[0] == '.':
+                            continue
                         dirpath = os.path.join(f'{root}/{Set}', user)
                         outpath = os.path.join(f'{root1}/{Set}', user)
                         if not os.path.exists(dirpath):
                             os.makedirs(dirpath, exist_ok=True)
+                        if not os.path.exists(outpath):
+                            os.makedirs(outpath, exist_ok=True)
                         # 返回left_before, left_after, right_before, right_after
-                        left_before, left_after, right_before, right_after = read_img(dirpath, trainval, config['num_images'])
+                        left_before, left_after, right_before, right_after = read_img(dirpath, trainval,
+                                                                                      config['num_images'])
                         if isinstance(left_before, torch.Tensor):
-                            left_before = self.model(left_before)
+                            left_before = self.model(left_before).squeeze()
                             print(left_before.shape)
-                            with open(os.path.join(outpath, user+'L_1.pkl'), 'wb') as pickle_file:
+                            with open(os.path.join(outpath, user + 'L_1.pkl'), 'wb') as pickle_file:
                                 pickle.dump(left_before, pickle_file)
                         if isinstance(left_after, torch.Tensor):
-                            left_after = self.model(left_after)
-                            with open(os.path.join(outpath, user+'L_2.pkl'), 'wb') as pickle_file:
+                            left_after = self.model(left_after).squeeze()
+                            with open(os.path.join(outpath, user + 'L_2.pkl'), 'wb') as pickle_file:
                                 pickle.dump(left_after, pickle_file)
                         if isinstance(right_before, torch.Tensor):
-                            right_before = self.model(right_before)
-                            with open(os.path.join(outpath, user+'R_1.pkl'), 'wb') as pickle_file:
+                            right_before = self.model(right_before).squeeze()
+                            with open(os.path.join(outpath, user + 'R_1.pkl'), 'wb') as pickle_file:
                                 pickle.dump(right_before, pickle_file)
                         if isinstance(right_after, torch.Tensor):
-                            right_after = self.model(right_after)
-                            with open(os.path.join(outpath, user+'R_2.pkl'), 'wb') as pickle_file:
+                            right_after = self.model(right_after).squeeze()
+                            with open(os.path.join(outpath, user + 'R_2.pkl'), 'wb') as pickle_file:
                                 pickle.dump(right_after, pickle_file)
 
 
@@ -159,5 +167,5 @@ if __name__ == "__main__":
     # from torchsummary import summary
     # model = torchvision.models.resnet18()
     # summary(model, (3, 224, 224), device='cpu')
-    path = '/home/linyan/sata/tianchi/split'
+    path = '../../dataset/split'
     FeatureExtraction(path)

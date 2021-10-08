@@ -16,7 +16,7 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
-        self.resnet = torchvision.models.resnet50()
+        self.resnet = torchvision.models.resnet152()
 
         # download or use cached model
         if not os.path.exists(self.pretrain_dir):
@@ -74,23 +74,23 @@ class Mixup(nn.Module):
     def __init__(self, channels, classes1, classes2, base):
         super(Mixup, self).__init__()
         self.ConvBlock = nn.Sequential(
-            nn.Conv2d(channels, base*4, 3, 2, 1),
-            nn.BatchNorm2d(base*4),
+            nn.Conv2d(channels, base * 4, 3, 2, 1),
+            nn.BatchNorm2d(base * 4),
             nn.LeakyReLU(inplace=True),
-            nn.Conv2d(base*4, base*2, 3, 2, 1),
-            nn.BatchNorm2d(base*2),
+            nn.Conv2d(base * 4, base * 2, 3, 2, 1),
+            nn.BatchNorm2d(base * 2),
             nn.LeakyReLU(inplace=True)
         )
 
         self.branch1 = nn.Sequential(
-            nn.Conv2d(base*2, base, 3, 2, 1),
+            nn.Conv2d(base * 2, base, 3, 2, 1),
             nn.BatchNorm2d(base),
             nn.LeakyReLU(inplace=True),
             nn.AdaptiveAvgPool2d((1, 1))
         )
 
         self.branch2 = nn.Sequential(
-            nn.Conv2d(base*2, base, 3, 2, 1),
+            nn.Conv2d(base * 2, base, 3, 2, 1),
             nn.BatchNorm2d(base),
             nn.LeakyReLU(inplace=True),
             nn.AdaptiveAvgPool2d((1, 1))
@@ -138,21 +138,40 @@ class EYENet(nn.Module):
         for param in self.aft_resnet.parameters():
             param.requires_grad = False
 
+        self.diag_encoder = nn.Embedding(20, embedding_dim=classes1 + classes2 + hidden_dim)
+        self.anti_encoder = nn.Embedding(20, embedding_dim=classes1 + classes2 + hidden_dim)
+
         self.fc_feat = nn.Linear(feature_dims, hidden_dim)
         # self.linear = nn.Linear(classes1 + classes2 + hidden_dim, output_dim)
         # self.linear.apply(self.init_weights)
 
         self.mlp = MLP(classes1 + classes2 + hidden_dim, hidden_dim, output_dim, num_layers=4)
+        self.mlp_pkl = MLP(1000 + 1000, 512, classes1 + classes2 + hidden_dim, num_layers=3)
 
-    def forward(self, x1, x2, x3):
+        self.alpha = 0.7
+
+    def forward(self, x1, x2, x3, pre_pkl=None, after_pkl=None):
         x1 = self.pre_resnet(x1)
         x2 = self.aft_resnet(x2)
         x = torch.cat([x1, x2], dim=1)
 
         x = self.mix(x)
+
+        if pre_pkl != None and after_pkl != None:
+            pkl_feat = torch.cat([pre_pkl, after_pkl], dim=1)
+        else:
+            pkl_feat = None
+
+        diag, anti = x3[:, -2].long(), x3[:, -1].long()
+        x3 = x3[:, 2:3]
         x3 = self.fc_feat(x3)
         x = torch.cat([x, x3], dim=1)
+        x = x + self.diag_encoder(diag)
+        x = x + self.anti_encoder(anti)
 
+        if pkl_feat != None:
+            pkl_feat = self.mlp_pkl(pkl_feat)
+            x = self.alpha * x + (1 - self.alpha) * pkl_feat
         # x = self.linear(x)
         x = self.mlp(x)
         return x
@@ -167,8 +186,18 @@ class EYENet(nn.Module):
 
 if __name__ == '__main__':
     # resnet_18 = ResNet('../../data/resnet18-5c106cde.pth', num_classes=2)
-    eye = EYENet('../../data/resnet50-19c8e357.pth', 512, 10, 10, 64, 5)
+    # eye = EYENet('../../data/resnet50-19c8e357.pth', 512, 10, 10, 64, 5)
+    eye = EYENet(
+        '../../data/resnet50-19c8e357.pth',
+        channels=512,
+        classes1=64,
+        classes2=64,
+        base=64,
+        feature_dims=1,
+        hidden_dim=64,
+        output_dim=12
+    )
     print(eye)
     # print(resnet_18)
-    summary(eye, input_size=[(3, 32, 32), (3, 32, 32), (1, 5)], device='cpu')
+    # summary(eye, input_size=[(3, 32, 32), (3, 32, 32), (5)], device='cpu')
     # print(os.path.exists('./resnet18-5c106cde.pth'))
