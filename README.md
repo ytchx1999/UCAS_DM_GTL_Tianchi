@@ -7,6 +7,8 @@ v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0s
 
 数据集补充特征(pkl): [https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download](https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download)
 
+原始仅切割的数据集split：[https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download](https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download)
+
 v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
