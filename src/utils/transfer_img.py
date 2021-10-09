@@ -68,7 +68,7 @@ def read_img(path, flag, num):
         elif pic[9] == 'L' and pic[11] == '1' and n1 < num:
             lb.append(transform(Image.open(currpath).convert('RGB')))
             n1 += 1
-        elif pic[9] == 'R' and pic[11] == '2' and n3 < num:
+        elif pic[9] == 'R' and pic[11] == '1' and n3 < num:
             rb.append(transform(Image.open(currpath).convert('RGB')))
             n3 += 1
         elif pic[9] == 'R' and pic[11] == '2' and n4 < num:
@@ -153,9 +153,9 @@ class ResNet(nn.Module):
         self.resnet.load_state_dict(state_dict_load)
 
         # modify the last FC layer
-        nums = self.resnet.fc.in_features
-        del self.resnet.fc
-        self.resnet.fc = nn.Linear(nums, num_classes)
+        # nums = self.resnet.fc.in_features
+        # del self.resnet.fc
+        # self.resnet.fc = nn.Linear(nums, num_classes)
         # self.resnet = nn.Sequential(*list(self.resnet.children())[:-1])
 
     def forward(self, x):
