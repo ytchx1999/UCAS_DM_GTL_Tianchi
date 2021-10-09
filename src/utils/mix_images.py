@@ -47,7 +47,7 @@ if __name__ == "__main__":
                         elif pic[9] == 'L' and pic[11] == '1':
                             lb += np.array(cv2.imread(currpath), dtype=float)
                             n1 += 1
-                        elif pic[9] == 'R' and pic[11] == '2':
+                        elif pic[9] == 'R' and pic[11] == '1':
                             rb += np.array(cv2.imread(currpath), dtype=float)
                             n3 += 1
                         elif pic[9] == 'R' and pic[11] == '2':
@@ -70,3 +70,5 @@ if __name__ == "__main__":
                     if n4 > 0:
                         img = (ra / n4).astype(np.int8)
                         cv2.imwrite(os.path.join(dispath[:-20], user + 'R_2.jpg'), img)
+                    if n3 < n4:
+                        cv2.imwrite(os.path.join(dispath[:-20], user + 'R_1.jpg'), img)
