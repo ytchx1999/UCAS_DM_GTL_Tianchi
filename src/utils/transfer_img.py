@@ -78,10 +78,12 @@ def read_img(path, flag, num):
         lb = torch.stack(lb)
     if n2 > 0:
         la = torch.stack(la)
-    if n3 > 0:
+    if n3 == n4 and n3 > 0:
         rb = torch.stack(rb)
     if n4 > 0:
         ra = torch.stack(ra)
+    if n3 != n4 and n4 > 0:
+        rb = ra.clone()
     return lb, la, rb, ra
 
 
@@ -131,7 +133,7 @@ class FeatureExtraction:
 
 
 class ResNet(nn.Module):
-    def __init__(self, pretrain_dir, num_classes=1000):
+    def __init__(self, pretrain_dir=None, num_classes=1000):
         '''
         :param pretain_dir: location of pretrained model resnet-18 (../../data/resnet18-5c106cde.pth)
         :param num_classes: label dims
@@ -139,6 +141,11 @@ class ResNet(nn.Module):
         super(ResNet, self).__init__()
         self.pretrain_dir = pretrain_dir
         self.num_classes = num_classes
+
+        # self.resnet = torch.hub.load("chenyaofo/pytorch-cifar-models", "cifar100_resnet56", pretrained=False)
+        # state_dict_load = torch.load('../../data/cifar100_resnet56-f2eff4c8.pt', map_location='cpu')
+        # self.resnet.load_state_dict(state_dict_load)
+
         self.resnet = torchvision.models.resnet50()
 
         # download or use cached model
@@ -160,6 +167,41 @@ class ResNet(nn.Module):
 
     def forward(self, x):
         x = self.resnet(x)
+        return x
+
+
+class VGG(nn.Module):
+    def __init__(self, pretrain_dir=None, num_classes=1000):
+        '''
+        :param pretain_dir: location of pretrained model resnet-18 (../../data/resnet18-5c106cde.pth)
+        :param num_classes: label dims
+        '''
+        super(VGG, self).__init__()
+        self.pretrain_dir = pretrain_dir
+        self.num_classes = num_classes
+        self.vgg = torch.hub.load("chenyaofo/pytorch-cifar-models", "cifar100_repvgg_a2", pretrained=False)
+        state_dict_load = torch.load('../../data/cifar100_repvgg_a2-8e71b1f8.pt', map_location='cpu')
+        self.vgg.load_state_dict(state_dict_load)
+
+        # download or use cached model
+        # if not os.path.exists(self.pretrain_dir):
+        #     # download
+        #     # https://download.pytorch.org/models/resnet18-5c106cde.pth
+        #     url = 'https://download.pytorch.org/models/resnet50-19c8e357.pth'
+        #     wget.download(url, "../../data/resnet50-19c8e357.pth")
+
+        # load state dict (params) of the model
+        # state_dict_load = torch.load(self.pretrain_dir, map_location='cpu')
+        # self.resnet.load_state_dict(state_dict_load)
+
+        # modify the last FC layer
+        # nums = self.resnet.fc.in_features
+        # del self.resnet.fc
+        # self.resnet.fc = nn.Linear(nums, num_classes)
+        # self.resnet = nn.Sequential(*list(self.resnet.children())[:-1])
+
+    def forward(self, x):
+        x = self.vgg(x)
         return x
 
 
