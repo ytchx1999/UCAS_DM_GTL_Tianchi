@@ -78,10 +78,12 @@ def read_img(path, flag, num):
         lb = torch.stack(lb)
     if n2 > 0:
         la = torch.stack(la)
-    if n3 > 0:
+    if n3 == n4:
         rb = torch.stack(rb)
     if n4 > 0:
         ra = torch.stack(ra)
+    if n3 != n4:
+        rb = torch.stack(rb)
     return lb, la, rb, ra
 
 
