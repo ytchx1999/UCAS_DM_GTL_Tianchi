@@ -68,22 +68,30 @@ def read_img(path, flag, num):
         elif pic[9] == 'L' and pic[11] == '1' and n1 < num:
             lb.append(transform(Image.open(currpath).convert('RGB')))
             n1 += 1
-        elif pic[9] == 'R' and pic[11] == '1' and n3 < num:
+        elif pic[9] == 'R' and pic[11] == '2' and n3 < num:
             rb.append(transform(Image.open(currpath).convert('RGB')))
             n3 += 1
         elif pic[9] == 'R' and pic[11] == '2' and n4 < num:
             ra.append(transform(Image.open(currpath).convert('RGB')))
             n4 += 1
+    # if n1 > 0:
+    #     lb = torch.stack(lb)
+    # if n2 > 0:
+    #     la = torch.stack(la)
+    # if n3 == n4 and n3 > 0:
+    #     rb = torch.stack(rb)
+    # if n4 > 0:
+    #     ra = torch.stack(ra)
+    # if n3 != n4 and n4 > 0:
+    #     rb = ra.clone()
     if n1 > 0:
         lb = torch.stack(lb)
     if n2 > 0:
         la = torch.stack(la)
-    if n3 == n4 and n3 > 0:
+    if n3 > 0:
         rb = torch.stack(rb)
     if n4 > 0:
         ra = torch.stack(ra)
-    if n3 != n4 and n4 > 0:
-        rb = ra.clone()
     return lb, la, rb, ra
 
 
