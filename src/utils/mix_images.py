@@ -6,9 +6,9 @@ import numpy as np
 
 if __name__ == "__main__":
     # preprocess the images and put the processed images to the new folder
-    root = '/home/linyan/sata/tianchi/split'
+    root = '../../dataset/split'
     for trainval in os.listdir(root):
-        root = '/home/linyan/sata/tianchi/split'
+        root = '../../dataset/split'
         root = os.path.join(root, trainval)
         if os.path.isdir(root):
             for Set in os.listdir(root):
@@ -53,7 +53,7 @@ if __name__ == "__main__":
                         elif pic[9] == 'R' and pic[11] == '2':
                             ra += np.array(cv2.imread(currpath), dtype=float)
                             n4 += 1
-                        dispath = os.path.join('/home/linyan/sata/tianchi', f'mix_{trainval}/' + currpath[len('/home/linyan/sata/tianchi/split/'):])
+                        dispath = os.path.join('../../dataset', f'mix_{trainval}/' + currpath[6:])
                         print(os.path.abspath(dispath)[:-20])
                         print(dispath)
                     if not os.path.exists(os.path.abspath(dispath)[:-20]):
