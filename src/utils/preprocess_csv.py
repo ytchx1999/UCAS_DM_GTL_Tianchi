@@ -10,10 +10,8 @@ def preprocess_csv():
     train_id_index: dict, {'patient ID': 0, ...}
     train_feats: torch_tensor, L2 normalization
     train_labels_dict: dict, {'preCST': torch.tensor(...), ...}
-
     test_id_index: dict, {'patient ID': 0, ...}
     test_feats: torch_tensor, L2 normalization
-
     :return: None, saved in ../../data/train_data.pk, ../../data/test_data.pk
     '''
     ########################
@@ -32,28 +30,30 @@ def preprocess_csv():
     print('train id:', train_id_index)
 
     # train features (numpy)
-    train_feats = train_data[['gender', 'age', 'diagnosis', 'preVA', 'anti-VEGF']].values
+    train_feats = train_data[['gender', 'age', 'preVA']].values
     train_feats = torch.from_numpy(train_feats)
+    train_feats_emb = train_data[['diagnosis', 'anti-VEGF']].values
+    train_feats_emb = torch.from_numpy(train_feats_emb)
     # L2 Normalize
     train_feats = F.normalize(train_feats, p=2, dim=0)
+    train_feats = torch.cat([train_feats, train_feats_emb], dim=1)
     train_feats = train_feats.numpy()
     print('train feats:', train_feats)
 
     # train labels (numpy)
-    train_labels = train_data[['preCST', 'preIRF', 'preSRF',
-                               'prePED', 'preHRF', 'VA',
-                               'continue injection', 'CST', 'IRF',
-                               'SRF', 'PED', 'HRF']].values
+    train_labels = train_data[['preCST', 'VA', 'CST',
+                               'continue injection', 'IRF', 'SRF', 'HRF',
+                               'preIRF', 'preSRF', 'prePED', 'preHRF', 'PED']].values
     # norm preCST, VA, CST
     # (x - mean) / std
     norm_info = {
         'preCST': [train_labels[:, 0].mean(), train_labels[:, 0].std()],
-        'VA': [train_labels[:, 5].mean(), train_labels[:, 5].std()],
-        'CST': [train_labels[:, 7].mean(), train_labels[:, 7].std()]
+        'VA': [train_labels[:, 1].mean(), train_labels[:, 1].std()],
+        'CST': [train_labels[:, 2].mean(), train_labels[:, 2].std()]
     }
     train_labels[:, 0] = (train_labels[:, 0] - norm_info['preCST'][0]) / norm_info['preCST'][1]
-    train_labels[:, 5] = (train_labels[:, 5] - norm_info['VA'][0]) / norm_info['VA'][1]
-    train_labels[:, 7] = (train_labels[:, 7] - norm_info['CST'][0]) / norm_info['CST'][1]
+    train_labels[:, 1] = (train_labels[:, 1] - norm_info['VA'][0]) / norm_info['VA'][1]
+    train_labels[:, 2] = (train_labels[:, 2] - norm_info['CST'][0]) / norm_info['CST'][1]
 
     # train labels (dict_torch)
     # train_labels_dict = {
@@ -93,9 +93,12 @@ def preprocess_csv():
     print('test id:', test_id_index)
 
     # test features (numpy)
-    test_feats = test_data[['gender', 'age', 'diagnosis', 'preVA', 'anti-VEGF']].values
+    test_feats = test_data[['gender', 'age', 'preVA']].values
     test_feats = torch.from_numpy(test_feats)
+    test_feats_emb = test_data[['diagnosis', 'anti-VEGF']].values
+    test_feats_emb = torch.from_numpy(test_feats_emb)
     test_feats = F.normalize(test_feats, p=2, dim=0)
+    test_feats = torch.cat([test_feats, test_feats_emb], dim=1)
     test_feats = test_feats.numpy()
     print('test feats:', test_feats)
 

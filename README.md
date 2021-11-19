@@ -1,26 +1,59 @@
 # UCAS_DM_GTL_Tianchi
-[[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL]
+[[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL] | [[Leaderboard](https://tianchi.aliyun.com/competition/entrance/531929/rankingList)]
 
 ## Download dataset
 
-[https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
+v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing](https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing)
+
+数据集补充特征(pkl): [https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download](https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download)
+
+数据集补充特征(pkl-152):[https://drive.google.com/file/d/1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao/view?usp=sharing](https://drive.google.com/file/d/1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao/view?usp=sharing)
+
+原始仅切割的数据集split：[https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download](https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download)
+
+v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
-## Branch
-baseline: `tianchi_v1`
-
-### Usage
-[《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
+**ResNet预训练模型下载**
 ```bash
+cd data/
+# download ResNet-50
+wget https://download.pytorch.org/models/resnet50-19c8e357.pth
+# download ResNet-152 
+wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
+```
+
+## Result
+
+<!-- ![10-2](./data/2021-10-02.png) -->
+
+|Date  | Score | Rank |
+|:-:|:-:|:-:|
+| 2021-10-08 | 0.4104 | 27 |
+| 2021-10-07 | 0.3973 | 37 |
+| 2021-10-02 | 0.3807 | 41 |
+| 2021-10-02 | 0.3716 | 44 |
+| 2021-10-01 | 0.2853 | 68 |
+
+## Branch Usage
+baseline: `tianchi_v4`
+
+[《git的一些使用心得》](https://blog.csdn.net/weixin_41650348/article/details/120468950?spm=1001.2014.3001.5501)
+
+```bash
+git clone git@github.com:ytchx1999/UCAS_DM_GTL_Tianchi.git
 # create and checkout the branch
-git checkout -b tianchi_v1
+git checkout -b tianchi_v4
 # or only checkout the branch
-git checkout tianchi_v1
+git checkout tianchi_v4
+git checkout main
+# pull from tianchi_v4 branch
+git pull origin tianchi_v4:tianchi_v4
 
 git add ...
 git commit ...
-git push -u origin tianchi_v1:tianchi_v1
+git push -u origin tianchi_v4:tianchi_v4
 ```
 
 ## Environment
@@ -34,8 +67,6 @@ opencv == 4.5.3
 PIL == 8.1.0
 seaborn == 0.11.2
 ```
-
-
 
 ## Experiment Setup
 Run corr analysis.
@@ -52,9 +83,23 @@ python preprocess_csv.py
 # load data
 cd ..
 python main.py
+# or run in background
+nohup python main.py > ../outputs/result.log 2>&1 &
+# check result
+tail -f ../outputs/result.log
 ```
 
+## Baseline模型结构
+一些trick：
++ 训练图像特征增强，测试保持不变
++ 换了resnet50（并且冻结了参数，训练样本太少了）
++ 特征加了个linear层，增加了hidden_dim的数量
++ 隔几个epoch调整学习率
+
+![model](./data/model.png)
+
 ## Corr Analysis
+
 ![heatmap by zhuhe](./data/heatmap.png)
 
 ```bash
@@ -82,8 +127,6 @@ Pos_Corr (r<-0.4)
 ## 一个简单的想法（不一定对）——chx
 [Process-on Flowchart](https://www.processon.com/view/link/613c1907e0b34d41bb4754f5)
 
-![idea](./data/Flowchart.png)
-
 ## First communication：
 
 图片处理：（huanglinyan）
@@ -91,7 +134,7 @@ Pos_Corr (r<-0.4)
 [网上一个人写的思路，仅供参考。](https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/16312381041561645%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF.pdf)
 
 1. 将所需图片进行裁剪，获取有用的特征（同一个病例左右眼分开，治疗前后分开，命名样例：0000-0000L_1000_cut_1.jpg、0000-0000L_1000_cut_2.jpg，注意一下在遍历文件夹时，需要注意匹配前面的字段，后面的lr可能匹配不上)
-2. 将裁剪下来的图片合并为一张图片（同一个病例左右眼分开，治疗前后分开，分别相加），图片保存到当前目录下，命名样例：0000-0000L_1.jpg 或 0000-0000L_2.jpg（1代表治疗前，2代表治疗后）
+2. 将裁剪下来的图片合并为一张图片（同一个病例左右眼分开，治疗前后分开，分别相加），图片保存到当前目录下，命名样例0000-0000L_1.jpg 或 0000-0000L_2.jpg（1代表治疗前，2代表治疗后）
 
 csv文件处理：（chihuixuan）
 
