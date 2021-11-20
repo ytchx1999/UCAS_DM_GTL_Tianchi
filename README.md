@@ -1,17 +1,41 @@
-# UCAS_DM_GTL_Tianchi
+# 2021-APTOS-Big-Data-Challenge
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL] | [[Leaderboard](https://tianchi.aliyun.com/competition/entrance/531929/rankingList)]
+
+by Huixuan Chi, Linyan Huang and He Zhu
+
+2021亚太眼科学会大数据竞赛是由[亚太眼科学会](https://asiateleophth.org/) (Asia Pacific Tele-Ophthalmology Society，APTOS)主办的全球人工智能挑战赛，其本主题是预测糖尿病性黄斑水肿 (DME) 患者的Anti-VEGF抗血管内皮生长因子(简称Anti-VEGF)治疗转归。同时，也是UCAS 2021秋季数据挖掘课程的大作业之一。
+
+## 初赛结果：
+
++ rank: 85 / 10006
++ score: 0.4104
+
+
+![](./data/result.png)
+
+
+
+<!-- ![10-2](./data/2021-10-02.png) -->
+
+|Date  | Score | 
+|:-:|:-:|
+| 2021-10-08 | 0.4104 | 
+| 2021-10-07 | 0.3973 | 
+| 2021-10-02 | 0.3807 | 
+| 2021-10-02 | 0.3716 | 
+| 2021-10-01 | 0.2853 | 
 
 ## Download dataset
 
-v2版本数据集：[https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing](https://drive.google.com/file/d/1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4/view?usp=sharing)
+v2版本数据集：[https://drive.google.com/u/0/uc?id=1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4&export=download](https://drive.google.com/u/0/uc?id=1Wc0CmqeZg_gJkiiqoB1EZT0S0seB1MF4&export=download)
 
 数据集补充特征(pkl): [https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download](https://drive.google.com/u/0/uc?id=1h2aHyAxEaVbM23YGP6dr_1pdwWIbG2NT&export=download)
 
-数据集补充特征(pkl-152):[https://drive.google.com/file/d/1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao/view?usp=sharing](https://drive.google.com/file/d/1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao/view?usp=sharing)
+~~数据集补充特征(pkl-152):~~[~~https://drive.google.com/u/0/uc?id=1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao&export=download~~](https://drive.google.com/u/0/uc?id=1C5_dRA1BmPOSjhlyrLxGO9LOhd5dXxao&export=download)
 
 原始仅切割的数据集split：[https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download](https://drive.google.com/u/0/uc?id=1i9tnBbfM3tkO5GyMtytsZcUIxU1Gyt0W&export=download)
 
-v1版本数据集（已弃用）：[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
+~~v1版本数据集（已弃用）：~~[~~https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing~~](https://drive.google.com/file/d/1bx3x2dchtwgp-pBAqp0LzacLxY0sB0Gr/view?usp=sharing) 
 
 使用：下载并解压之后，放到`./dataset`（新建一个目录，和README同一级）。详细情况可以参见文末的目录树。
 
@@ -24,17 +48,7 @@ wget https://download.pytorch.org/models/resnet50-19c8e357.pth
 wget https://download.pytorch.org/models/resnet152-b121ed2d.pth
 ```
 
-## Result
 
-<!-- ![10-2](./data/2021-10-02.png) -->
-
-|Date  | Score | Rank |
-|:-:|:-:|:-:|
-| 2021-10-08 | 0.4104 | 27 |
-| 2021-10-07 | 0.3973 | 37 |
-| 2021-10-02 | 0.3807 | 41 |
-| 2021-10-02 | 0.3716 | 44 |
-| 2021-10-01 | 0.2853 | 68 |
 
 ## Branch Usage
 baseline: `tianchi_v4`
@@ -89,15 +103,6 @@ nohup python main.py > ../outputs/result.log 2>&1 &
 tail -f ../outputs/result.log
 ```
 
-## Baseline模型结构
-一些trick：
-+ 训练图像特征增强，测试保持不变
-+ 换了resnet50（并且冻结了参数，训练样本太少了）
-+ 特征加了个linear层，增加了hidden_dim的数量
-+ 隔几个epoch调整学习率
-
-![model](./data/model.png)
-
 ## Corr Analysis
 
 ![heatmap by zhuhe](./data/heatmap.png)
@@ -124,30 +129,29 @@ Pos_Corr (r<-0.4)
   ('PED', 'diagnosis')]                
 ```
 
-## 一个简单的想法（不一定对）——chx
-[Process-on Flowchart](https://www.processon.com/view/link/613c1907e0b34d41bb4754f5)
 
-## First communication：
+## Baseline模型结构
 
-图片处理：（huanglinyan）
 
-[网上一个人写的思路，仅供参考。](https://tianchi-public.oss-cn-hangzhou.aliyuncs.com/public/files/forum/16312381041561645%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF.pdf)
+![model](./data/model.png)
 
-1. 将所需图片进行裁剪，获取有用的特征（同一个病例左右眼分开，治疗前后分开，命名样例：0000-0000L_1000_cut_1.jpg、0000-0000L_1000_cut_2.jpg，注意一下在遍历文件夹时，需要注意匹配前面的字段，后面的lr可能匹配不上)
-2. 将裁剪下来的图片合并为一张图片（同一个病例左右眼分开，治疗前后分开，分别相加），图片保存到当前目录下，命名样例0000-0000L_1.jpg 或 0000-0000L_2.jpg（1代表治疗前，2代表治疗后）
+如图所示，模型（`model.py`）总共分为三个部分：黄色区域代表的上游主网络部分、绿色区域代表的上游辅助网络部分以及蓝色区域代表的下游网络部分。
 
-csv文件处理：（chihuixuan）
+## Tricks
++ 图片特征增强：对训练集图片进行随机裁剪和翻转，测试集图片保持不变
++ 学习率调整：每10个epoch，学习率衰减0.1
++ 舍弃无用的特征属性（gender、age）
++ 对整形离散特征（diagnosis、anti-VEGF）进行encoding，得到低维的embedding 
++ 预训练模型Resnet并冻结卷积层参数进行Fintune
 
-1. 去掉nan值所在的一个样本
-2. 获取训练测试的输入数据以及label，一行样本对应处理后的一个文件名，治疗前后分开，行数扩大为原来的两倍（训练测试分别做一个txt文件）
+## 不足
 
-一些想法（zhuhe）
+本次比赛基本达到了目标，仅使用最传统的ResNet模型进行模型搭建和设计，就成功进入了复赛。虽然如此，仍然有很多的不足之处：
 
-感觉这个主要难度都在图像处理和专家知识上。
++ 没有kfold cross validation和ensemble方法
++ 没有用到医学成像以及图像分割的domain knowledge和SOTA
 
-目前有两个想法：
-1. 需要先了解清楚CST，IRF这些属性在患者图像中是怎么体现的，大概在图像的哪些部分可以帮助进行判别，这样方便下一步设计图像算法，进行二分类；
-2. 另一方面可以做一些相关性分析的算法，判断各个属性对VA的值的影响，单独设计一个模型预测VA的变化。
+
 
 ## Directory Structure
 
@@ -167,13 +171,16 @@ csv文件处理：（chihuixuan）
 │   ├── train_data.pk
 │   └── tree.txt
 ├── dataset
+|   ├── split
 │   ├── mix_train
 │   │   ├── 0000-0000
 │   │   │   ├── 0000-0000L_1.jpg
 │   │   │   ├── 0000-0000L_2.jpg
 │   │   │   ├── ...
 │   │   └── ...
-│   └── mix_test
+│   |── mix_test
+|   ├── pkl_train
+|   └── pkl_test 
 └── src
     ├── __init__.py
     ├── main.py
@@ -186,5 +193,6 @@ csv文件处理：（chihuixuan）
         ├── dataset.py
         ├── mix_images.py
         ├── preprocess_csv.py
+        ├── transfer_img.py
         └── preprocess_img.py
 ```
