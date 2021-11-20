@@ -1,4 +1,7 @@
 # 2021-APTOS-Big-Data-Challenge
+
+![](./data/intro.jpeg)
+
 [[2021 亚太眼科学会大数据竞赛](https://tianchi.aliyun.com/competition/entrance/531929/information)] | [队伍：UCAS_DM_GTL] | [[Leaderboard](https://tianchi.aliyun.com/competition/entrance/531929/rankingList)]
 
 by Huixuan Chi, Linyan Huang and He Zhu
