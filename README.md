@@ -6,7 +6,8 @@
 
 by Huixuan Chi, Linyan Huang and He Zhu
 
-2021亚太眼科学会大数据竞赛是由[亚太眼科学会](https://asiateleophth.org/) (Asia Pacific Tele-Ophthalmology Society，APTOS)主办的全球人工智能挑战赛，其本主题是预测糖尿病性黄斑水肿 (DME) 患者的Anti-VEGF抗血管内皮生长因子(简称Anti-VEGF)治疗转归。同时，也是UCAS 2021秋季数据挖掘课程的大作业之一。
+
+2021亚太眼科学会大数据竞赛是由[亚太眼科学会](https://asiateleophth.org/) (Asia Pacific Tele-Ophthalmology Society，APTOS)主办的全球人工智能挑战赛，其本主题是预测糖尿病性黄斑水肿 (DME) 患者的Anti-VEGF抗血管内皮生长因子(简称Anti-VEGF)治疗转归。同时，也是UCAS 2021秋季数据挖掘课程的大作业之一，这是我们的[技术报告](./2021_APTOS_Tech_Report_chx.pdf)。
 
 由于我和zh同学都不是研究CV方向的（而且这个比赛是更加专业的医学图像分割问题），所以后期基本就是放弃了。
 
